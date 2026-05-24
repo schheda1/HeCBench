@@ -37,7 +37,9 @@
 #include <iostream>
 #include <chrono>
 #include <cuda.h>
+#ifdef VERIFY
 #include "reference.h"
+#endif
 #include "kernel.h"
 
 int main(int argc, char** argv)
@@ -101,6 +103,7 @@ int main(int argc, char** argv)
   cudaFree(d_output_image);
 
   // verify
+#ifdef VERIFY
   affine_reference(input_image, output_image_ref);
   int max_error = 0;
   for (int y = 0; y < Y_SIZE; y++) {
@@ -109,6 +112,7 @@ int main(int argc, char** argv)
     }
   }
   printf("   Max output error is %d\n\n", max_error);
+#endif
 
   printf("   Writing RAW Image\n");
   const char *outputImageFilename = argv[2];

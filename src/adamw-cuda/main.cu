@@ -5,7 +5,9 @@
 #include <random>
 #include <cuda.h>
 #include "kernels.h"
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 int main(int argc, char* argv[])
 {
@@ -106,6 +108,7 @@ int main(int argc, char* argv[])
               resid_beta1,
               resid_beta2);
 
+#ifdef VERIFY
     reference<float, threadsPerBlock>(
               blocksPerGrid,
               p_ref,
@@ -127,16 +130,18 @@ int main(int argc, char* argv[])
               weight_decay_update,
               resid_beta1,
               resid_beta2);
+#endif
   }
 
   cudaMemcpy(p, d_p, size_bytes, cudaMemcpyDeviceToHost); 
+#ifdef VERIFY
   float absmax_error = 0;
   for (int64_t i = 0; i < vector_size * 2; i++) {
     absmax_error = fmaxf(absmax_error, fabsf(p[i] - p_ref[i]));
   }
   printf("Absolute maximum error: %f\n", absmax_error);
   printf("%s\n", absmax_error > 1e-3f ? "FAIL" : "PASS");
-
+#endif
   auto start = std::chrono::steady_clock::now();
 
   for (int step = 1; step <= time_step; step++) {

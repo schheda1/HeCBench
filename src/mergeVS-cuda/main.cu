@@ -168,7 +168,7 @@ void run_test(int repeat, bool causal, struct configs &cfg)
   int *r_blk_cnt = (int*)calloc(res.n_scalar, sizeof(int));
   int *r_col_idx = (int*)calloc(res.n_index, sizeof(int));
   int *r_blk_off = (int*)calloc(res.n_offset, sizeof(int));
-
+#ifdef VERIFY
   reference (
     h_q,
     h_kv,
@@ -188,7 +188,7 @@ void run_test(int repeat, bool causal, struct configs &cfg)
     NNZ_V, //nnz_vertical,
     NNZ_S, //nnz_slash,
     causal);
-
+#endif
   int *d_q, *d_kv, *d_vidx, *d_sidx, *d_vcnt, *d_scnt;
   GPU_CHECK(cudaMalloc(&d_q,    qkv_size * sizeof(int)));
   GPU_CHECK(cudaMalloc(&d_kv,   qkv_size * sizeof(int)));

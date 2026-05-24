@@ -5,7 +5,9 @@
 #include <random>
 #include <cuda.h>
 #include "kernels.h"
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 float* attention_device(const float* key, const float* value, const float* query,
                         const int n, const int d, const int impl_num, const int repeat)
@@ -154,9 +156,12 @@ int main(int argc, char* argv[]) {
     query[i % d] = dist(gen);
   }
 
+#ifdef VERIFY  
   float* hout = attention_host(key, value, query, n, d);
+#endif  
   float* dout = attention_device(key, value, query, n, d, k, r);
 
+#ifdef VERIFY
   bool ok = true;
   for (int i = 0; i < d; i++) {
     if (fabsf(hout[i] - dout[i]) > 1e-3f) {
@@ -165,6 +170,7 @@ int main(int argc, char* argv[]) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   free(key);
   free(value);

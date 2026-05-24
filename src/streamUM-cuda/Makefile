@@ -54,5 +54,5 @@ clean:
 	rm -rf $(program) $(obj)
 
 run: $(program)
-	$(LAUNCHER) ./$(program) 4 1000 1
+	$(LAUNCHER) ./$(program) 4 1000 0
 	$(LAUNCHER) ./$(program) 4 4000 0

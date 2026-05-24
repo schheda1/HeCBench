@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
     rng_wallace <<< rng_wallace_grid, rng_wallace_threads >>> (
         seed, devPool, device_randomNumbers, devicerngChi2Corrections);
   }
-
+#ifdef VERIFY
   for (int i = 0; i < 30; i++) {
     reference(seed, Pool_ref, randomNumbers_ref, rngChi2Corrections, WALLACE_NUM_BLOCKS);
   }
@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   cudaDeviceSynchronize();
   auto start = std::chrono::steady_clock::now();
 

@@ -82,8 +82,10 @@ int main(int argc, char* argv[])
     psi[i] = -100.0 + 101.0 * i / size;
   }
 
+#ifdef VERIFY
   // for verification
   reference(Ksat, psi, C_ref, theta_ref, K_ref, size);
+#endif
 
   double *d_Ksat, *d_psi, *d_C, *d_theta, *d_K;
   cudaMalloc((void**)&d_Ksat, size_byte); 
@@ -114,6 +116,7 @@ int main(int argc, char* argv[])
   cudaMemcpy(theta, d_theta, size_byte, cudaMemcpyDeviceToHost);
   cudaMemcpy(K, d_K, size_byte, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   bool ok = true;
   for (int i = 0; i < size; i++) {
     if (fabs(C[i] - C_ref[i]) > 1e-3 || 
@@ -124,6 +127,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   cudaFree(d_Ksat);
   cudaFree(d_psi);

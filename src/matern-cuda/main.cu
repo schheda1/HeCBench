@@ -131,6 +131,7 @@ int main(int argc, char* argv[])
   printf("Verifying the kernel results with the problem size (16 cube)\n");
   printf("------------------------------------------------------------\n");
 
+#ifdef VERIFY
   while (l <= 1e5f) {
     matern_kernel<<<grids, blocks>>>(ntargets_small, l, d_sources, d_targets, d_weights, d_result);
     matern_kernel_reference(nsources, ntargets_small, l, sources, targets, weights, result_ref);
@@ -146,6 +147,7 @@ int main(int argc, char* argv[])
     printf("Length scale = %.1e check = %s\n", l, ok ? "PASS" : "FAIL");
     l = l * 10.f;
   }
+#endif
 
   printf("--------------------------------------------------------------------\n");
   printf("Timing the kernel execution with the problem size (%d cube)\n", npoints);

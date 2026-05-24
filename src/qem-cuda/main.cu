@@ -55,6 +55,7 @@ int main(int argc, char* argv[]) {
   float avg = 0;
   bool ok;
 
+#ifdef VERIFY
   printf("####################### Reference #############\n");
 
   for (int k = 0; k < repeat; ++k) {
@@ -70,7 +71,7 @@ int main(int argc, char* argv[]) {
   }
 
   printf("Execution time (ms): %f\n", avg / repeat);
-
+#endif
   avg = 0;
 
   printf("####################### GPU (no streams) #############\n");
@@ -118,6 +119,7 @@ int main(int argc, char* argv[]) {
 
   printf("Execution time (ms): %f\n", avg / repeat);
 
+#ifdef VERIFY
   ok = true;
   for (int i = 0; i < N; i++) {
     if (fabsf(minimum[i] - minimum_ref[i]) > 1e-3f) {
@@ -126,6 +128,7 @@ int main(int argc, char* argv[]) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   checkCuda(cudaFreeHost(A));
   checkCuda(cudaFreeHost(B));

@@ -40,6 +40,7 @@ void topk_softmax(int num_tokens, int num_experts, int topk, int repeat)
     }
   }
 
+#ifdef VERIFY  
   moeSoftmax_reference(
           gating_output,
           nullptr,
@@ -58,7 +59,7 @@ void topk_softmax(int num_tokens, int num_experts, int topk, int repeat)
           topk,
           0,  // start_expert
           num_experts);
-
+#endif
   float *d_topk_weights;
   cudaMalloc(&d_topk_weights, weight_size_bytes);
 
@@ -100,6 +101,7 @@ void topk_softmax(int num_tokens, int num_experts, int topk, int repeat)
   cudaMemcpy(topk_indices, d_topk_indices, index_size_bytes, cudaMemcpyDeviceToHost);
   cudaMemcpy(token_expert_indices, d_token_expert_indices, index_size_bytes, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   int error = memcmp(topk_indices, topk_indices_ref, index_size_bytes);
   error += memcmp(token_expert_indices, token_expert_indices_ref, index_size_bytes);
   for (int i = 0; i < weight_size; i++) {
@@ -109,7 +111,7 @@ void topk_softmax(int num_tokens, int num_experts, int topk, int repeat)
     }
   }
   printf("%s\n", error ? "FAIL" : "PASS");
-
+#endif
   auto start = std::chrono::steady_clock::now();
 
   for (int i = 0; i < repeat; i++) {

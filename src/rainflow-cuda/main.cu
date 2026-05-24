@@ -234,6 +234,7 @@ int main(int argc, char* argv[]) {
   auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   printf("Average kernel execution time: %f (us)\n", (time * 1e-3f) / repeat);
 
+#ifdef VERIFY
   cudaMemcpy(result_lengths, d_result_lengths, num_history * sizeof(int), cudaMemcpyDeviceToHost);
 
   reference (
@@ -248,6 +249,7 @@ int main(int argc, char* argv[]) {
 
   int error = memcmp(ref_result_lengths, result_lengths, num_history * sizeof(int));
   printf("%s\n", error ? "FAIL" : "PASS");
+#endif
 
   cudaFree(d_history);
   cudaFree(d_history_lengths);

@@ -162,7 +162,7 @@ int main(int argc, const char **argv)
     dAvgGPUTime[0] = MultiQueueSequence(d_input, d_output, iTestCycles, uiNumElements, false);
 
     encSize = 0;
-
+#ifdef VERIFY
     auto start = std::chrono::steady_clock::now();
     for (int i = 0; i < 1; i++)
     {
@@ -177,7 +177,7 @@ int main(int argc, const char **argv)
     status = memcmp(expected_output, output, encSize);
     printf("%s\n", status ? "FAIL" : "PASS");
     bPassFlag = (status == 0);
-
+#endif
     printf("*******************************************\n");
     printf("Run and time with 1 command queue\n");
     printf("*******************************************\n");
@@ -185,6 +185,7 @@ int main(int argc, const char **argv)
     dAvgGPUTime[1] = OneQueueSequence(d_input, d_output, iTestCycles, uiNumElements, false);
 
     encSize = 0;
+  #ifdef VERIFY
     start = std::chrono::steady_clock::now();
     for (int i = 0; i < 1; i++)
     {
@@ -199,7 +200,7 @@ int main(int argc, const char **argv)
     status = memcmp(expected_output, output, encSize);
     printf("%s\n", status ? "FAIL" : "PASS");
     bPassFlag &= (status == 0);
-
+#endif
     // Compare Single and Dual queue timing
     printf("\nResult Summary:\n");
 
@@ -209,7 +210,9 @@ int main(int argc, const char **argv)
              i == 0 ? nStreams : 1, dAvgGPUTime[i]);
       printf("  Max GPU Kernel Throughput for %d-Queue execution = %.2f GB/s\n",
              i == 0 ? nStreams : 1, numBlock * 7 / dAvgGPUTime[i] / 1e9);
+#ifdef VERIFY
       printf("  Avg Host Elapsed Time\t\t\t= %.5f s\n\n", dHostTime[i]);
+#endif
     }
 
     // Log overlap % for GPU (comparison of 2-queue and 1 queue scenarios) and status

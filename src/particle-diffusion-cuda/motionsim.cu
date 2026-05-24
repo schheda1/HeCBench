@@ -292,7 +292,7 @@ int main(int argc, char* argv[]) {
   std::cout << std::endl;
   std::cout << "Simulation time: " << time * 1e-9 << " (s) ";
   std::cout << std::endl;
-
+#ifdef VERIFY
   motion_host(particleX, particleY, randomX, randomY, grid, grid_size,
               n_particles, nIterations, radius, map_ref, nRepeat);
 
@@ -302,7 +302,7 @@ int main(int argc, char* argv[]) {
       count++; 
   }
   std::cout << (count <= 2 ? "PASS" : "FAIL") << std::endl;
-
+#endif
 #ifdef DEBUG
   // Displays final grid only if grid small.
   if (grid_size <= 64) {

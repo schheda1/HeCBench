@@ -21,8 +21,9 @@
 #include <chrono>
 #include <cuda.h>
 #include <cuda_fp16.h>
+#ifdef VERIFY
 #include "reference.h"
-
+#endif
 __inline__ __device__
 float exponent (float x) { return __expf(x); }
 
@@ -248,7 +249,7 @@ void LossNLL_BWD(int iterations) {
   end = std::chrono::high_resolution_clock::now();
   time = std::chrono::duration<float, std::milli>(end - start).count(); // ms
   durations[0] += time;
-
+#ifdef VERIFY
   start = std::chrono::high_resolution_clock::now();
 
   loss_bwd_cpu<scalar_t, gscalar_t>(log_softmax, target, weight, mask, grad_output, grad_output_neg, grad_predict);
@@ -256,16 +257,17 @@ void LossNLL_BWD(int iterations) {
   end = std::chrono::high_resolution_clock::now();
   time = std::chrono::duration<float, std::milli>(end - start).count(); // ms
   durations[2] = time;
-
+#endif
   verify<gscalar_t>(grad_predict, grad_predict_device_host, bs * W * H);
 
   std::cout << "GPU device memory allocation and data transfer time (ms) : "
             << (durations[0] / iterations) << std::endl;
   std::cout << "Average GPU kernel time (ms) : "
             << (durations[1] / iterations) << std::endl;
+#ifdef VERIFY
   std::cout << "CPU serial time (ms) : "
             << (durations[2]) << std::endl;
-
+#endif
   double allBytes = static_cast<double>(sizeof(scalar_t)) * static_cast<double>(PredictShape * 2.0 + OutputShape * 3.0)
                   + static_cast<double>(sizeof(int64_t)) * static_cast<double>(TargetShape * 2.0);
 

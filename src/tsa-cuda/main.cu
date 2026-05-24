@@ -44,8 +44,9 @@ void tsa(int width, int height, int repeat) {
   // compute reference results
   memcpy(h_imag, p_imag, matrix_size);
   memcpy(h_real, p_real, matrix_size);
+#ifdef VERIFY
   reference(h_real, h_imag, a, b, width, height, repeat);
-
+#endif
   // thread block / shared memory block width
   const int BLOCK_X = 16;
   // shared memory block height
@@ -94,6 +95,7 @@ void tsa(int width, int height, int repeat) {
   cudaMemcpy(p_real, d_real[sense], matrix_size, cudaMemcpyDeviceToHost);
   cudaMemcpy(p_imag, d_imag[sense], matrix_size, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   // verify
   bool ok = true;
   for (int i = 0; i < numel; i++) {
@@ -107,6 +109,7 @@ void tsa(int width, int height, int repeat) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   delete[] p_real;
   delete[] p_imag;

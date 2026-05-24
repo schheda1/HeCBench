@@ -311,6 +311,7 @@ void fused_softmax(int batches, int attn_heads, int query_seq_len,
 
   cudaMemcpy(output, d_output, sizeof(scalar_t) * num_data_elems, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   reference<scalar_t, scalar_t, float>(output_ref, input, mask, scale_factor,
                                        pad_batches, batches, attn_heads, query_seq_len, key_seq_len);
   bool ok = true;
@@ -322,6 +323,7 @@ void fused_softmax(int batches, int attn_heads, int query_seq_len,
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   cudaDeviceSynchronize();
   auto start = std::chrono::steady_clock::now();

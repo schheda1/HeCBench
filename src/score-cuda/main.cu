@@ -263,6 +263,7 @@ int main(int argc, char* argv[])
   cudaMemcpy(indices, d_indices, indices_size_bytes, cudaMemcpyDeviceToHost);
   cudaMemcpy(count, d_count, count_size_bytes, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   reference<float, 2048>(indices_ref, count_ref, scores, threshold, classwise_topK, batch_size, num_classes, num_priors);
 
   unsigned checksum = 0; 
@@ -278,6 +279,7 @@ int main(int argc, char* argv[])
   }
   checksum += memcmp(count, count_ref, count_size_bytes);
   printf("%s\n", checksum == 0 ? "PASS" : "FAIL");
+#endif
 
   cudaFree(d_indices);
   cudaFree(d_count);

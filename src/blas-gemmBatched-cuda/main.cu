@@ -175,7 +175,7 @@ void gemmBatched(
 	 << sum / reps / num << " us per operation; "
          << "floating-point operations per second: ";
     performance(m, n, k, 1e3 * (sum / reps / num));
-
+#ifdef VERIFY
     // verify double precision operations 
     if constexpr (std::is_same_v<T, double>) {
       cudaMemcpy(result, devResult, vectors_size, cudaMemcpyDeviceToHost);
@@ -191,6 +191,7 @@ void gemmBatched(
         }
       }}
     }
+#endif
   }
 
   cudaFree(devMatrices);

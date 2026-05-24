@@ -143,6 +143,7 @@ void read_input(XYZ *in, const Params &p) {
   }
 }
 
+#ifdef VERIFY
 inline int compare_output(XYZ *outp, XYZ *outpCPU, int NI, int NJ, int RESOLUTIONI, int RESOLUTIONJ) {
   double sum_delta2, sum_ref2, L1norm2;
   sum_delta2 = 0;
@@ -165,6 +166,7 @@ inline int compare_output(XYZ *outp, XYZ *outpCPU, int NI, int NJ, int RESOLUTIO
   }
   return 0;
 }
+#endif
 
 // BezierBlend (http://paulbourke.net/geometry/bezier/)
 __host__ __device__
@@ -249,12 +251,14 @@ void run(XYZ *in, int in_size_i, int in_size_j, int out_size_i, int out_size_j, 
   XYZ *cpu_out = (XYZ *)malloc(out_size_i * out_size_j * sizeof(XYZ));
   XYZ *gpu_out = (XYZ *)malloc(out_size_i * out_size_j * sizeof(XYZ));
 
+#ifdef VERIFY
   // CPU run
   auto start = std::chrono::steady_clock::now();
   BezierCPU(in, cpu_out, in_size_i, in_size_j, out_size_i, out_size_j);
   auto end = std::chrono::steady_clock::now();
   auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
   std::cout << "host execution time: " << time << " ms" << std::endl;
+#endif
 
   // Device run
 
@@ -283,9 +287,11 @@ void run(XYZ *in, int in_size_i, int in_size_j, int out_size_i, int out_size_j, 
 
   cudaMemcpy(gpu_out, d_out, out_size, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   // Verify
   int status = compare_output(gpu_out, cpu_out, in_size_i, in_size_j, out_size_i, out_size_j);
   printf("%s\n", (status == 0) ? "PASS" : "FAIL");
+#endif
 
   free(cpu_out);
   free(gpu_out);

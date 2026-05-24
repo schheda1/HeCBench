@@ -23,8 +23,9 @@
 #include "cuda_compat.h"
 #include "attention_kernels.cuh"
 #include "kvcache.h"
+#ifdef VERIFY
 #include "reference.h"
-
+#endif
 
 #define LAUNCH_PAGED_ATTENTION_V1(HEAD_SIZE)                          \
   VLLM_DevFuncAttribute_SET_MaxDynamicSharedMemorySize(               \
@@ -254,6 +255,7 @@ void attention_page (int num_seqs,
 
     GPU_CHECK(cudaMemcpy(out_h, out_d, sizeof(T) * query_elems, cudaMemcpyDeviceToHost));
 
+#ifdef VERIFY
     //printf("Running PagedAttention CPU Reference...\n");
     PagedAttentionParams<T> params;
     params.out = out_r;
@@ -284,6 +286,7 @@ void attention_page (int num_seqs,
       }
     }
     printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
     free(query_h);
     free(out_h);

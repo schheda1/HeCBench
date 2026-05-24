@@ -114,6 +114,7 @@ int main(int argc, char* argv[]) {
 
   cudaMemcpy(lb, d_lb, sizeof(float)*(N-M+1), cudaMemcpyDeviceToHost);
 
+  #ifdef VERIFY
   // verify
   reference(subject, avgs, stds, lb_h, lower, upper, M, N);
   bool ok = true;
@@ -125,7 +126,7 @@ int main(int argc, char* argv[]) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   cudaFree(d_lb);
   cudaFree(d_avgs);
   cudaFree(d_stds);

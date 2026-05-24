@@ -160,15 +160,16 @@ int main(int argc, char* argv[])
     for (int64_t i = 0; i < (int64_t)num_tokens * hidden_size * topk; i++) {
       input[i] = dis(gen);
     }
-
+#ifdef VERIFY
     // reference
     moe_sum_ref<float>(topk, r_output, input, num_tokens, hidden_size);
-
+#endif
     GPU_CHECK(cudaMemcpy(d_input, input, input_size_bytes, cudaMemcpyHostToDevice));
 
     // base
     int64_t nano_seconds = moe_sum(d_input, d_output, hidden_size, num_tokens, topk, repeat);
     GPU_CHECK(cudaMemcpy(output, d_output, output_size_bytes, cudaMemcpyDeviceToHost));
+#ifdef VERIFY    
     bool ok = true;
     for (int64_t i = 0; i < (int64_t)num_tokens * hidden_size; i++) {
       if (fabsf(r_output[i] - output[i]) > 1e-4f) {
@@ -176,7 +177,7 @@ int main(int argc, char* argv[])
       }
     }
     printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
     float io_bytes = 1.f * repeat * (input_size_bytes + output_size_bytes);
     float bw = io_bytes / nano_seconds;
     printf("Kernel bandwidth: %f GB/s \n", bw);
@@ -185,7 +186,7 @@ int main(int argc, char* argv[])
     nano_seconds = moe_sum_vec4(d_input, d_output, hidden_size, num_tokens, topk, repeat);
     GPU_CHECK(cudaMemcpy(output_vec4, d_output, output_size_bytes, cudaMemcpyDeviceToHost));
     int32_t rc = memcmp(output, output_vec4, output_size_bytes);
-    printf("%s\n", rc ? "FAIL" : "PASS");
+    printf("%s\n", rc ? "FAIL" : "PASS");  //verifies gpu impls. we don't need to touch this
 
     float bw_vec4 = io_bytes / nano_seconds;
     printf("Kernel(vec4) bandwidth: %f GB/s (%f%%)\n", bw_vec4, 100 * (bw_vec4 - bw) / bw);

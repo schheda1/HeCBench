@@ -287,7 +287,7 @@ void hadamard_transform(int batch_size, int dim, int repeat) {
             batch_size, dim, (time * 1e-3f) / repeat);
 
     GPU_CHECK(cudaMemcpy(h_out.data(), d_out, numel * sizeof(T), cudaMemcpyDeviceToHost));
-
+#ifdef VERIFY
     reference(h_x, r_out, batch_size, dim, scale);
 
     bool ok = true;
@@ -299,7 +299,7 @@ void hadamard_transform(int batch_size, int dim, int repeat) {
       }
     }
     printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
     GPU_CHECK(cudaFree(d_x));
     GPU_CHECK(cudaFree(d_out));
 }

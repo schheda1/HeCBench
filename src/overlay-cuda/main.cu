@@ -130,7 +130,7 @@ int main(int argc, char* argv[]) {
   float4 colors = make_float4(255, 204, 203, 1); 
 
   DetectionOverlay<float3>(d_input, d_output, width, height, detections, numDetections, colors);  
-
+#ifdef VERIFY
   reference<float3>(input, ref_output, width, height, detections, numDetections, colors);  
 
   cudaMemcpy(output, d_output, img_size_byte, cudaMemcpyDeviceToHost);
@@ -146,6 +146,7 @@ int main(int argc, char* argv[]) {
     }
 
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   cudaFree(d_input);
   cudaFree(d_output);

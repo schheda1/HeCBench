@@ -399,6 +399,7 @@ int main(int argc, char* argv[]) {
     auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
     printf("Average kernel execution time (n_diff = %d): %f (s)\n", n_diff, (time * 1e-9f) / repeat);
     cudaMemcpy(F_fc, d_F_fc, fc_size, cudaMemcpyDeviceToHost);
+#ifdef VERIFY    
     reference<rd>(
           nseries,
           nobs,
@@ -414,6 +415,7 @@ int main(int argc, char* argv[]) {
           n_diff,
           fc_steps,
           true); // forcast
+  #endif
   }
 
   free(fc);

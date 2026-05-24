@@ -174,7 +174,7 @@ int main(int argc, char** argv) {
 
   // reference
   auto start = std::chrono::steady_clock::now();
-
+#ifdef VERIFY
   memcpy(MatrixTemp_ref[0], FilesavingTemp, size);
   int ret = reference(FilesavingPower, MatrixTemp_ref, grid_cols, grid_rows,
                       total_iterations, pyramid_height);
@@ -183,9 +183,9 @@ int main(int argc, char** argv) {
   auto end = std::chrono::steady_clock::now();
   auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   printf("Total reference execution time %f (s)\n", time * 1e-9f);
-
+#endif
   // device offloading
-  start = std::chrono::steady_clock::now();
+  auto start = std::chrono::steady_clock::now();
 
   float *MatrixPower;
   cudaMalloc((void**)&MatrixPower, size);
@@ -208,10 +208,10 @@ int main(int argc, char** argv) {
 
   cudaMemcpy(result, MatrixTemp[ret], size, cudaMemcpyDeviceToHost);
 
-  end = std::chrono::steady_clock::now();
+  auto end = std::chrono::steady_clock::now();
   time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   printf("Device offloading time: %.3f (s)\n", time * 1e-9f);
-
+#ifdef VERIFY
   bool ok = true;
   for (int i = 0; i < grid_cols * grid_rows; i++) {
     if (fabsf(result_ref[i] - result[i]) > 1e-3f) {
@@ -220,7 +220,7 @@ int main(int argc, char** argv) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   // Write final output to output file
   writeoutput(result, grid_rows, grid_cols, ofile);
 

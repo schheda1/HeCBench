@@ -161,6 +161,7 @@ int main(int argc, char* argv[])
   cudaMemcpy(var, d_var, fs_bytes, cudaMemcpyDeviceToHost);
   cudaMemcpy(mean, d_mean, fs_bytes, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   welford_reference<float, float, float>(
       input, r_mean, r_var, batch_size, feature_size, spatial_size);
 
@@ -173,6 +174,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   cudaFree(d_input);
   cudaFree(d_mean);

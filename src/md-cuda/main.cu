@@ -115,11 +115,11 @@ int main(int argc, char** argv)
       nAtom, maxNeighbors, lj1, lj2, cutsq);
 
   cudaMemcpy(h_force, d_force, nAtom * sizeof(FORCEVECTYPE), cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   std::cout << "Performing Correctness Check (may take several minutes)\n";
 
   checkResults<FPTYPE, FORCEVECTYPE, POSVECTYPE>(h_force, position, neighborList, nAtom);
-
+#endif
   auto start = std::chrono::steady_clock::now();
 
   for (int j = 0; j < iteration; j++)

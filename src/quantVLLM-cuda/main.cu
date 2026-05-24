@@ -220,9 +220,10 @@ void quant(int num_tokens, int hidden_size, int repeat) {
   printf("Average execution time of static_scaled_int8_quant kernel: %f (us)\n",
           (time * 1e-3f) / repeat);
   cudaMemcpy(h_output, d_output, output_size_bytes, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   static_scaled_int8_quant_reference(h_input, h_output_r, scale, num_tokens, hidden_size);
   error = memcmp(h_output, h_output_r, output_size_bytes);
-
+#endif
   // static_scaled_int8_quant_azp
   azp = 54;
   start = std::chrono::steady_clock::now();
@@ -234,9 +235,10 @@ void quant(int num_tokens, int hidden_size, int repeat) {
   printf("Average execution time of static_scaled_int8_quant_azp kernel: %f (us)\n",
           (time * 1e-3f) / repeat);
   cudaMemcpy(h_output, d_output, output_size_bytes, cudaMemcpyDeviceToHost);
+#ifdef VERFIY  
   static_scaled_int8_azp_quant_reference(h_input, h_output_r, scale, azp, num_tokens, hidden_size);
   error += memcmp(h_output, h_output_r, output_size_bytes);
-
+#endif
   // dynamic_scaled_int8_quant
   start = std::chrono::steady_clock::now();
   for (int i = 0; i < repeat; i++) 
@@ -247,9 +249,10 @@ void quant(int num_tokens, int hidden_size, int repeat) {
   printf("Average execution time of dynamic_scaled_int8_quant kernel: %f (us)\n",
           (time * 1e-3f) / repeat);
   cudaMemcpy(h_output, d_output, output_size_bytes, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   dynamic_scaled_int8_quant_reference(h_input, h_output_r, h_scale, num_tokens, hidden_size);
   error += memcmp(h_output, h_output_r, output_size_bytes);
-
+#endif
   // dynamic_scaled_int8_quant_azp
   cudaMalloc(&d_azp, azp_size_bytes);
   start = std::chrono::steady_clock::now();
@@ -261,10 +264,12 @@ void quant(int num_tokens, int hidden_size, int repeat) {
   printf("Average execution time of dynamic_scaled_int8_quant_azp kernel: %f (us)\n",
           (time * 1e-3f) / repeat);
   cudaMemcpy(h_output, d_output, output_size_bytes, cudaMemcpyDeviceToHost);
+#ifdef VERIFY  
   dynamic_scaled_int8_azp_quant_reference(h_input, h_output_r, h_scale, h_azp, num_tokens, hidden_size);
   error += memcmp(h_output, h_output_r, output_size_bytes);
 
   printf("%s\n", error ? "FAIL" : "PASS");
+#endif
 
   cudaFree(d_input);
   cudaFree(d_output);

@@ -245,12 +245,14 @@ int main(int argc, char **argv) {
   GPU_CHECK(cudaMemcpy(d_dout, dout, S * 4 * sizeof(float), cudaMemcpyHostToDevice));
 
   int block_sizes[] = {32, 64, 128, 256, 512, 1024};
+#ifdef VERIFY
   printf("Checking forward pass\n");
   for (int block_size : block_sizes) {
     printf("Checking block size %d\n", block_size);
     upsample_forward1(d_out, d_x, B, C, H, W, block_size);
     validate_result(d_out, out, "out", B * C * (H/2) * (W/2));
   }
+#endif
 
   printf("Forward1 pass benchmarks:\n");
   for (int block_size : block_sizes) {
@@ -263,11 +265,14 @@ int main(int argc, char **argv) {
 
   printf("\n─────────────────────────────────────────────────────\n");
   int block2D_sizes[] = {8, 16, 32};
+#ifdef VERIFY
   for (int block_size : block2D_sizes) {
     printf("Checking block size %d\n", block_size);
     upsample_forward2(d_out, d_x, B, C, H, W, block_size, block_size);
     validate_result(d_out, out, "out", B * C * (H/2) * (W/2));
   }
+#endif
+
   printf("Forward2 pass benchmarks:\n");
   for (int block_size : block2D_sizes) {
 
@@ -278,6 +283,7 @@ int main(int argc, char **argv) {
   }
 
   printf("\n─────────────────────────────────────────────────────\n");
+#ifdef VERIFY
   printf("Checking backward pass\n");
   upsample_backward_reference(dout, dx, B, C, H, W);
   for (int block_size : block_sizes) {
@@ -285,6 +291,7 @@ int main(int argc, char **argv) {
     upsample_backward1(d_dx, d_dout, B, C, H, W, block_size);
     validate_result(d_dx, dx, "dx", S);
   }
+#endif
 
   printf("\nBackward pass benchmarks:\n");
   for (int block_size : block_sizes) {

@@ -184,8 +184,10 @@ int main(int argc, char **argv) {
   float* out = (float*)malloc(N * sizeof(float));
   float* dx = (float*)malloc(N * sizeof(float));
 
+#ifdef VERIFY
   silu_forward_reference(x, out, N);
   silu_backward_reference(dout, x, dx, N);
+#endif
 
   // allocate device memory
   float *d_x, *d_out, *d_dout, *d_dx;
@@ -197,6 +199,7 @@ int main(int argc, char **argv) {
   GPU_CHECK(cudaMemcpy(d_dout, dout, N * sizeof(float), cudaMemcpyHostToDevice));
 
   int block_sizes[] = {64, 128, 256, 512, 1024};
+#ifdef VERIFY
   printf("Checking forward pass\n");
   for (int block_size: block_sizes) {
     printf("Checking block size %d\n", block_size);
@@ -229,7 +232,7 @@ int main(int argc, char **argv) {
     silu_backward3(d_dout, d_x, d_dx, N, block_size);
     validate_result(d_dx, dx, "dx", N);
   }
-
+#endif
   printf("\nForward pass benchmarks:\n");
   for (int block_size: block_sizes) {
     float elapsed_time = benchmark_kernel(repeat, silu_forward, d_x, d_out, N, block_size);

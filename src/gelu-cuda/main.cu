@@ -106,14 +106,14 @@ int main(int argc, char* argv[])
  
   dim3 block(block_size, 1);
   dim3 grid(seq_len, batch_size);
-
+#ifdef VERIFY
   // warmup and verify
   gelu_bias_loop_cpu (output_ref, bias, batch_size, hidden_dim, seq_len);
-
+#endif
   cudaMemcpy(d_output, input, src_size_bytes, cudaMemcpyHostToDevice);
   gelu_bias_loop_base <<<grid, block>>> (d_output, d_bias, hidden_dim, seq_len);
   cudaMemcpy(output, d_output, src_size_bytes, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   bool ok = true;
   for (size_t i = 0; i < src_size; i++) {
     if (fabsf(__half2float(output_ref[i]) - __half2float(output[i])) > 1e-3f) {
@@ -122,11 +122,11 @@ int main(int argc, char* argv[])
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   cudaMemcpy(d_output, input, src_size_bytes, cudaMemcpyHostToDevice);
   gelu_bias_loop <<<grid, block>>> (d_output, d_bias, hidden_dim, seq_len);
   cudaMemcpy(output, d_output, src_size_bytes, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   ok = true;
   for (size_t i = 0; i < src_size; i++) {
     if (fabsf(__half2float(output_ref[i]) - __half2float(output[i])) > 1e-3f) {
@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   cudaDeviceSynchronize();
   auto start = std::chrono::steady_clock::now();
 

@@ -6,7 +6,9 @@
 #include <random>
 #include <cuda.h>
 #include "kernels.h"
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 int PowTwoDivider(int n)
 {
@@ -37,11 +39,13 @@ int main(int argc, char* argv[]) {
   std::mt19937 gen{ 123 };
   std::normal_distribution<float> d{0.f, 1.f};
 
+#ifdef VERIFY
   for (int h = 0; h < height; h++) {
     for (int w = 0; w < width; w++) {
       image_ref[h * width + w] = image[h * width + w] = d(gen);
     }
   }
+#endif
 
   float *d_image;
   cudaMalloc((void**)&d_image, image_size);
@@ -58,6 +62,7 @@ int main(int argc, char* argv[]) {
   toCoef2DX<<<dimGridX, dimBlockX>>>(d_image, image_pitch, width, height);
   toCoef2DY<<<dimGridY, dimBlockY>>>(d_image, image_pitch, width, height);
 
+#ifdef VERIFY
   toCoef2DX_ref(image_ref, image_pitch, width, height);
   toCoef2DY_ref(image_ref, image_pitch, width, height);
 
@@ -73,6 +78,7 @@ int main(int argc, char* argv[]) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   auto start = std::chrono::steady_clock::now();
   for (int i = 0; i < repeat; i++) {

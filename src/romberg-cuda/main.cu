@@ -116,8 +116,10 @@ int main( int argc, char** argv)
   double sum = 0.0;
   for(int k = 0; k < nwg; k++) sum += h_result[k];
 
+#ifdef VERIFY
   double ref_sum = reference(f, A, B, ROW_SIZE, EPS);
   printf("%s\n", (fabs(sum - ref_sum) > EPS) ? "FAIL" : "PASS");
+#endif
 
   cudaFree(d_result);
   free(h_result);

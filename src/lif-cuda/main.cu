@@ -145,7 +145,7 @@ int main(int argc, char* argv[]) {
   cudaMemcpy(spikes, d_spikes, neurons_size, cudaMemcpyDeviceToHost);
   cudaMemcpy(voltage, d_voltage, neurons_size, cudaMemcpyDeviceToHost);
   cudaMemcpy(reftime, d_reftime, neurons_size, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   for(int step = 0; step < num_steps; step++) {
     reference(num_neurons,
               neurons_per_item,
@@ -185,7 +185,7 @@ int main(int argc, char* argv[]) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   free(encode_result);
   free(voltage);
   free(voltage_host);

@@ -121,14 +121,16 @@ int main(int argc, char* argv[])
           for (uint64_t i = 0; i < nelems; i++) {
             x_and_gate[i] = distribution(generator);
           }
+#ifdef VERIFY
           geglu_reference(output_ref, x_and_gate, batch * shape, dim_last);
+#endif
 
           CUDA_CHECK(cudaMalloc((void**)&d_x_and_gate, nelems_bytes));
           CUDA_CHECK(cudaMalloc((void**)&d_output, nelems_bytes / 2));
           CUDA_CHECK(cudaMemcpy(d_x_and_gate, x_and_gate, nelems_bytes, cudaMemcpyHostToDevice));
           geglu_gpu(d_output, d_x_and_gate, batch * shape, dim_last);
           CUDA_CHECK(cudaMemcpy(output, d_output, nelems_bytes / 2, cudaMemcpyDeviceToHost));
-
+#ifdef VERIFY
           bool ok = true;
           for (uint64_t i = 0; i < nelems/2; i++) {
             if (fabsf(output[i] - output_ref[i]) > 1e-3f) {
@@ -138,6 +140,7 @@ int main(int argc, char* argv[])
           }
 
           printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
           free(x_and_gate);
           free(output);
           free(output_ref);

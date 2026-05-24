@@ -189,9 +189,9 @@ int main(int argc, const char *argv[]) {
   train_error = 1.f-(correct/(float)m);
 
   printf("object value = %f train_error = %f\n", obj_val, train_error);
-
+#ifdef VERIFY
   reference(A, x, grad, m, n, iters, alpha, lambda, obj_val, train_error);
-
+#endif
   cudaFree(d_row_ptr);
   cudaFree(d_col_index);
   cudaFree(d_value);

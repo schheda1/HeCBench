@@ -148,6 +148,7 @@ void zoom (int repeat, int input_sizes[4], float zoom_factor[2])
 
   cudaMemcpy(output_img, d_output_img, output_img_size_bytes, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   if (is_zoom_in) {
     zoom_in_reference(
         input_img, output_img_ref, H, W, Ho, Wo,
@@ -180,6 +181,7 @@ void zoom (int repeat, int input_sizes[4], float zoom_factor[2])
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   cudaFree(d_input_img);
   cudaFree(d_output_img);

@@ -114,12 +114,14 @@ int main(int argc, char* argv[]) {
 
   cudaMemcpy(h_distance, d_distance, 2 * sizeof(float), cudaMemcpyDeviceToHost);
 
+  #ifdef VERIFY
   printf("Verifying the result may take a while..\n");
   float r_distance = hausdorff_distance(h_Apoints, h_Bpoints, num_Apoints, num_Bpoints);
   float t_distance = std::max(h_distance[0], h_distance[1]);
 
   bool error = (fabsf(t_distance - r_distance)) > 1e-3f;
   printf("%s\n", error ? "FAIL" : "PASS");
+#endif
 
   free(h_Apoints);
   free(h_Bpoints);

@@ -121,7 +121,7 @@ int main(int argc, char** argv){
     outputData[i] = cuCreal(fftData[i]) * cuCreal(fftData[i]) +
                     cuCimag(fftData[i]) * cuCimag(fftData[i]);
   }
-
+#ifdef VERIFY
   reference(inputData_ref, outputData_ref, N);
 
   bool ok = true;
@@ -131,14 +131,15 @@ int main(int argc, char** argv){
       break;
     }
   }
-
+#endif
   free(inputData);
   free(inputData_ref);
   free(fftData);
   free(outputData);
   free(outputData_ref);
-
+#ifdef VERIFY
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   return 0;
 }

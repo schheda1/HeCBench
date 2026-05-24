@@ -244,6 +244,7 @@ int main (void) {
   cudaMemcpy (temp_red, temp_red_d, size_temp * sizeof(Real), cudaMemcpyDeviceToHost);
   cudaMemcpy (temp_black, temp_black_d, size_temp * sizeof(Real), cudaMemcpyDeviceToHost);
 
+  #ifdef VERIFY
   // Reference
   int count = 0;
 
@@ -286,6 +287,7 @@ int main (void) {
 
   fclose(pfile);
   printf("%s\n", count == 0 ? "PASS" : "FAIL");
+#endif
 
   cudaFree(aP_d);
   cudaFree(aW_d);

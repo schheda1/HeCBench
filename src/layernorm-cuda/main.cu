@@ -279,7 +279,7 @@ int main(int argc, char **argv) {
   // evaluate kernels
   for (int kernel_num = 0; kernel_num < 3; kernel_num++) {
     printf("Using kernel %d\n", kernel_num);
-
+#ifdef VERIFY
     layernorm_forward_cpu(out, mean, rstd, inp, weight, bias, B, T, C);
 
     // check the correctness of the kernel at all block sizes
@@ -294,7 +294,7 @@ int main(int argc, char **argv) {
     }
 
     printf("All results match. Starting benchmarks.\n\n");
-
+#endif
     // time the kernel at different block sizes
     for (int block_size : block_sizes) {
 

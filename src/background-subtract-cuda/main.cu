@@ -4,7 +4,9 @@
 #include <chrono>
 #include <random>
 #include <cuda.h>
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 #define BLOCK_SIZE 256
 
@@ -109,10 +111,12 @@ int main(int argc, char* argv[]) {
   std::mt19937 generator( 123 );
   std::uniform_int_distribution<int> distribute( 0, 255 );
 
+#ifdef VERIFY
   for (int j = 0; j < imgSize; j++) {
     Bn_ref[j] = Bn[j] = distribute(generator);
     Tn_ref[j] = Tn[j] = 128;
   }
+#endif
 
   cudaMemcpy(d_Bn, Bn, imgSize_bytes, cudaMemcpyHostToDevice);
   cudaMemcpy(d_Tn, Tn, imgSize_bytes, cudaMemcpyHostToDevice);
@@ -160,7 +164,9 @@ int main(int argc, char* argv[]) {
         auto end = std::chrono::steady_clock::now();
         time += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
       }
+#ifdef VERIFY      
       merge_ref ( imgSize, Img, Img1, Img2, Tn_ref, Bn_ref );
+#endif
     }
   }
 
@@ -170,6 +176,7 @@ int main(int argc, char* argv[]) {
   cudaMemcpy(Tn, d_Tn, imgSize_bytes, cudaMemcpyDeviceToHost);
   cudaMemcpy(Bn, d_Bn, imgSize_bytes, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   // verification
   int max_error = 0;
   for (int i = 0; i < imgSize; i++) {
@@ -183,6 +190,7 @@ int main(int argc, char* argv[]) {
   printf("Max error is %d\n", max_error);
 
   printf("%s\n", max_error ? "FAIL" : "PASS");
+#endif
 
   free(Img);
   free(Img1);

@@ -3,8 +3,9 @@
 #include <math.h>
 #include <chrono>
 #include <cuda.h>
-
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 __global__ void smoothingFilter(
     int Lx, int Ly, 
@@ -204,11 +205,11 @@ int main(int argc, char* argv[]) {
   cudaMemcpy(out, d_out, size_bytes, cudaMemcpyDeviceToHost);
   cudaMemcpy(box, d_box, box_bytes, cudaMemcpyDeviceToHost);
   cudaMemcpy(norm, d_norm, size_bytes, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   // verify
   reference (Lx, Ly, Threshold, MaxRad, img, h_box, h_norm, h_out);
   verify(size, MaxRad, norm, h_norm, out, h_out, box, h_box);
-
+#endif
   cudaFree(d_img);
   cudaFree(d_norm);
   cudaFree(d_box);

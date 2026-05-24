@@ -172,11 +172,13 @@ void eval(IndexType input_size, int repeat)
     size_t output_size_bytes = sizeof(output_t) * output_size;
     output_t *output = (output_t*) malloc (output_size_bytes);
 
+#ifdef VERIFY    
     // reference
     output_t *output_r = (output_t*) calloc (output_size, sizeof(output_t));
     reference<output_t, input_t, IndexType>(
       output_r, input, nbins, input_minvalue, input_maxvalue,
       input_size, output_size, repeat);
+#endif
 
     output_t *d_output;
     cudaMalloc((void**)&d_output, output_size_bytes);
@@ -192,8 +194,10 @@ void eval(IndexType input_size, int repeat)
     HANDLE_SWITCH_CASE(memType)
     cudaMemcpy(output, d_output, output_size_bytes, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
     int status = memcmp(output, output_r, output_size_bytes);
     printf("%s\n", status ? "FAIL" : "PASS");
+#endif
 
     if (sharedMem <= maxSharedMemory) {
       printf("\n");
@@ -203,9 +207,10 @@ void eval(IndexType input_size, int repeat)
       memType = DeviceMemoryType::SHARED;
       HANDLE_SWITCH_CASE(memType)
       cudaMemcpy(output, d_output, output_size_bytes, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
       int status = memcmp(output, output_r, output_size_bytes);
       printf("%s\n", status ? "FAIL" : "PASS");
+#endif
     }
 
     cudaFree(d_output);

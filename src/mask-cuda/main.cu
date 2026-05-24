@@ -224,9 +224,9 @@ void eval_mask (const int M, const int N, const int B, const int repeat) {
   int nblocks = (B <= 0) ? (N * M / GPU_THREADS) : (N * M);
   dim3 grid (nblocks);
   dim3 block (GPU_THREADS);
-
+#ifdef VERIFY
   sequenceMaskKernel_cpu(N, M, batch_dim, h_in, h_seq_len, fill_val, h_out);
-
+#endif
   cudaDeviceSynchronize();
   auto start = std::chrono::steady_clock::now();
 
@@ -241,9 +241,9 @@ void eval_mask (const int M, const int N, const int B, const int repeat) {
   printf("Average execution time of sequenceMask kernel: %f (us)\n",
          (time * 1e-3f) / repeat);
   print_mask_ratio(h_out, d_out, fill_val, data_size);
- 
+#ifdef VERIFY 
   windowMaskKernel_cpu(N, M, batch_dim, h_in, h_window, radius, fill_val, h_out);
-
+#endif
   start = std::chrono::steady_clock::now();
 
   for (int i = 0; i < repeat; i++) {
@@ -257,9 +257,9 @@ void eval_mask (const int M, const int N, const int B, const int repeat) {
   printf("Average execution time of windowMask kernel: %f (us)\n",
          (time * 1e-3f) / repeat);
   print_mask_ratio(h_out, d_out, fill_val, data_size);
-
+#ifdef VERIFY
   upperMaskKernel_cpu(N, M, batch_dim, h_in, fill_val, h_out);
-
+#endif
   start = std::chrono::steady_clock::now();
 
   for (int i = 0; i < repeat; i++) {
@@ -273,9 +273,9 @@ void eval_mask (const int M, const int N, const int B, const int repeat) {
   printf("Average execution time of upperMask kernel: %f (us)\n",
          (time * 1e-3f) / repeat);
   print_mask_ratio(h_out, d_out, fill_val, data_size);
-
+#ifdef VERIFY
   lowerMaskKernel_cpu(N, M, batch_dim, h_in, fill_val, h_out);
-
+#endif
   start = std::chrono::steady_clock::now();
 
   for (int i = 0; i < repeat; i++) {
@@ -289,9 +289,9 @@ void eval_mask (const int M, const int N, const int B, const int repeat) {
   printf("Average execution time of lowerMask kernel: %f (us)\n",
          (time * 1e-3f) / repeat);
   print_mask_ratio(h_out, d_out, fill_val, data_size);
-
+#ifdef VERIFY
   upperDiagMaskKernel_cpu(N, M, batch_dim, h_in, fill_val, h_out);
-
+#endif
   start = std::chrono::steady_clock::now();
 
   for (int i = 0; i < repeat; i++) {
@@ -305,9 +305,9 @@ void eval_mask (const int M, const int N, const int B, const int repeat) {
   printf("Average execution time of upperDiagMask kernel: %f (us)\n",
          (time * 1e-3f) / repeat);
   print_mask_ratio(h_out, d_out, fill_val, data_size);
-
+#ifdef VERIFY
   lowerDiagMaskKernel_cpu(N, M, batch_dim, h_in, fill_val, h_out);
-
+#endif
   start = std::chrono::steady_clock::now();
 
   for (int i = 0; i < repeat; i++) {

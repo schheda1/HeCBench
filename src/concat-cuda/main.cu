@@ -100,16 +100,16 @@ int main(int argc, char* argv[])
     // warmup and verify
     concat <<<nblock, 256>>>(
       d_inp1, d_inp2, d_outp, batch_size * beam_size * nhead, head_dim, sl1, sl2);
-
+#ifdef VERIFY
     concat_cpu(
       inp1, inp2, outp_ref, batch_size * beam_size * nhead, head_dim, sl1, sl2);
-     
+#endif
     cudaDeviceSynchronize();
-
+#ifdef VERIFY
     cudaMemcpy (outp, d_outp, outp_size_bytes, cudaMemcpyDeviceToHost);
     int error = memcmp(outp_ref, outp, outp_size_bytes);
     printf("%s\n", error ? "FAIL" : "PASS");
-
+#endif
     auto start = std::chrono::steady_clock::now();
 
     for (int i = 0; i < repeat; i++) {

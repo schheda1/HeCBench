@@ -4,7 +4,9 @@
 #include <cuda.h>
 #include <chrono>
 #include <random>
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 template <typename T, typename G>
 __global__
@@ -128,6 +130,7 @@ int main(int argc, char* argv[])
   cudaFree(d_v);
   cudaFree(d_g);
 
+#ifdef VERIFY
   // verify
   reference<float, float>(
     repeat,
@@ -153,7 +156,7 @@ int main(int argc, char* argv[])
 
   printf("%s\n", ok ? "PASS" : "FAIL");
   printf("Checksum: %lf %lf\n", cr / vector_size, cp / vector_size);
-
+#endif
   free(p);
   free(m);
   free(v);

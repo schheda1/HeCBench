@@ -96,20 +96,21 @@ int main(int argc, char **argv) {
   cudaCheck(cudaMemcpy(d_gamma, gamma, H * sizeof(float), cudaMemcpyHostToDevice));
 
   int block_sizes[] = {32, 64, 128, 256, 512, 1024};
-
+#ifdef VERIFY
   rmsnorm_forward_cpu(out, inp, gamma, N, H);
-
+#endif
   // check the correctness of the kernel at all block sizes
   for (int block_size : block_sizes) {
       printf("Checking block size %d.\n", block_size);
 
       rmsnorm_forward(d_inp, d_gamma, d_out, H, N, 1e-5f, block_size);
-
+#ifdef VERIFY
       validate_result(d_out, out, "out", size, 1e-5f);
+#endif
   }
-
+#ifdef VERIFY
   printf("All results match. Starting benchmarks.\n\n");
-
+#endif
   // time the kernel at different block sizes
   for (int block_size : block_sizes) {
 

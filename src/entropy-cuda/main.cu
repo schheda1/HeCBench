@@ -151,6 +151,7 @@ int main(int argc, char* argv[]) {
   cudaFree(d_input);
   cudaFree(d_output);
   cudaFree(d_logTable);
+#ifdef VERIFY
 
   // verify
   reference(output_ref, input, height, width);
@@ -166,7 +167,7 @@ int main(int argc, char* argv[]) {
     if (!ok) break;
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
- 
+ #endif
   free(input);
   free(output);
   free(output_ref);

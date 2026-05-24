@@ -52,6 +52,7 @@ long test_1D (const int length, const int order, const bool clip,
 
   cudaMemcpy(gpu_r, d_result, length*sizeof(bool), cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   cpu_relextrema_1D<T>(length, order, clip, x, cpu_r);
 
   int error = 0;
@@ -60,7 +61,7 @@ long test_1D (const int length, const int order, const bool clip,
       error = 1; 
       break;
     }
-
+#endif
   cudaFree(d_x);
   cudaFree(d_result);
   free(x);

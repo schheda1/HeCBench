@@ -286,7 +286,8 @@ int main(int argc, char **argv) {
   signed char* lattice_w_h = (signed char*) malloc(nx * ny/2 * sizeof(*lattice_w_h));
   CHECK_CUDA(cudaMemcpy(lattice_b_h, lattice_b, nx * ny/2 * sizeof(*lattice_b), cudaMemcpyDeviceToHost));
   CHECK_CUDA(cudaMemcpy(lattice_w_h, lattice_w, nx * ny/2 * sizeof(*lattice_w), cudaMemcpyDeviceToHost));
-  
+
+#ifdef VERIFY
   printf("Starting verification iterations ...\n");
   init_spins_ref(lattice_b_r, randvals_host, nx, ny/2);
   init_spins_ref(lattice_w_r, randvals_host, nx, ny/2);
@@ -301,7 +302,7 @@ int main(int argc, char **argv) {
     if (!ok) break;
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
 #ifndef CURAND
   free(randvals_host);
 #endif

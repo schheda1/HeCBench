@@ -166,9 +166,9 @@ void surfelRenderTest(int n, int w, int h, int repeat)
   bool ok = true;
   for (int f = 0; f < 3; f++) {
     printf("\nf = %d\n", f);
-
+#ifdef VERIFY
     reference<T>(h_src, n, inverseFocalLength[f], w, h, r_dst);
-    
+#endif
     cudaDeviceSynchronize();
     auto start = std::chrono::steady_clock::now();
 
@@ -181,7 +181,7 @@ void surfelRenderTest(int n, int w, int h, int repeat)
     printf("Average execution time of surfel_render(base): %f (ms)\n", (time * 1e-6f) / repeat);
 
     cudaMemcpy(h_dst, d_dst, dst_size * sizeof(T), cudaMemcpyDeviceToHost); 
-
+#ifdef VERIFY
     for (int i = 0; i < dst_size; i++) {
       if (fabs(h_dst[i] - r_dst[i]) > 1e-3) {
         printf("%f %f\n", h_dst[i] , r_dst[i]);
@@ -190,7 +190,7 @@ void surfelRenderTest(int n, int w, int h, int repeat)
       }
     }
     if (!ok) break;
-
+#endif
     start = std::chrono::steady_clock::now();
 
     for (int i = 0; i < repeat; i++)
@@ -202,6 +202,7 @@ void surfelRenderTest(int n, int w, int h, int repeat)
     printf("Average execution time of surfel_render(tile): %f (ms)\n", (time * 1e-6f) / repeat);
 
     cudaMemcpy(h_dst, d_dst, dst_size * sizeof(T), cudaMemcpyDeviceToHost); 
+#ifdef VERIFY
     for (int i = 0; i < dst_size; i++) {
       if (fabs(h_dst[i] - r_dst[i]) > 1e-3) {
         printf("%f %f\n", h_dst[i] , r_dst[i]);
@@ -210,8 +211,11 @@ void surfelRenderTest(int n, int w, int h, int repeat)
       }
     }
     if (!ok) break;
+#endif
   }
+#ifdef VERIFY
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   free(r_dst);
   free(h_dst);

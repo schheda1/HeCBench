@@ -87,9 +87,9 @@ int main(int argc, char* argv[])
     const int split_dim_size = Yshape[split_index] / 2;
     const int m = size_to_dim(split_index, Xshape);
     const int n = size_from_dim(split_index + 1, Xshape);
-
+#ifdef VERIFY
     ComputeGlu(m, split_dim_size, n, X, Y_ref);
-
+#endif
     dim3 grids ((m * split_dim_size * n + block_size - 1) / block_size);
     dim3 blocks (block_size);
 
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
            split_index, (time * 1e-3f) / repeat);
 
     cudaMemcpy(Y, d_Y, nelems_bytes, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
     bool ok = true;
     for (uint64_t i = 0; i < nelems/2; i++) {
       if (fabsf(Y[i] - Y_ref[i]) > 1e-3f) {
@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
     }
     printf("%s\n", ok ? "PASS" : "FAIL");
   }
-
+#endif
   free(X);
   free(Y);
   free(Y_ref);

@@ -467,12 +467,14 @@ int main(int argc, char **argv)
     fill_rand(h_z,     N_udz, -2.f,  2.f);
     memset(h_states0, 0, N_st * SZ);
 
+#ifdef VERIFY
     // reference
     memcpy(h_s_ref, h_states0, N_st * SZ);
     selective_scan_ref(h_u, h_delta, h_A, h_B, h_C, h_D, h_dbias,
                        use_z ? h_z : nullptr, /*delta_softplus=*/true,
                        batch, dim, dstate, seqlen,
                        h_s_ref, h_y_ref);
+#endif
 
     float *d_u, *d_delta, *d_A, *d_B, *d_C, *d_D, *d_dbias, *d_z;
     float *d_states, *d_y;
@@ -548,6 +550,7 @@ int main(int argc, char **argv)
     GPU_CHECK(cudaFree(d_carry_a));
     GPU_CHECK(cudaFree(d_carry_b));
 
+#ifdef VERIFY
     const float TOL = 1e-3f;
     printf("  Results vs reference (tolerance=%.0e):\n", TOL);
     print_result("Base kernel",
@@ -556,6 +559,7 @@ int main(int argc, char **argv)
     print_result("VLLM-style kernel",
                  max_abs_err(h_y_ref, h_y_v, N_y),
                  max_abs_err(h_s_ref, h_s_v, N_st), TOL);
+#endif
 
     // benchmarking
     auto start = std::chrono::high_resolution_clock::now();

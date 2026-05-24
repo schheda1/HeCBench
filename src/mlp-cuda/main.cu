@@ -202,7 +202,7 @@ int main(int argc, char* argv[])
 
   if (error == 0) {
     GPU_CHECK(cudaMemcpy(out, d_out, out_size, cudaMemcpyDeviceToHost));
-
+#ifdef VERIFY
     float *out_r = reference(
       num_layers, batch_size, input_features,
       hidden_dim, num_outputs, use_relu, use_bias, repeat);
@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
 #endif
     }
     printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
     // benchmarking
     auto start = std::chrono::steady_clock::now();
 

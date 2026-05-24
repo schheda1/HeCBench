@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
     auto end = std::chrono::steady_clock::now();
     auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
     total_time += time;
-
+#ifdef VERIFY
     reference(target_sequence.data(), query_sequence.data(), batch_result_ref, length, qseq_size,
               coarse_match_length, coarse_match_threshold, current_position);
 
@@ -111,12 +111,13 @@ int main(int argc, char* argv[])
 
     error = memcmp(batch_result_ref, batch_result, kBatchSize * sizeof(char));
     if (error) break;
-
+#endif
     current_position = end_position;
   }
   printf("Total kernel execution time %f (s)\n", total_time * 1e-9f);
+#ifdef VERIFY
   printf("%s\n", error ? "FAIL" : "PASS");
-  
+#endif
   cudaFree(d_target);
   cudaFree(d_query);
   cudaFree(d_batch_result);

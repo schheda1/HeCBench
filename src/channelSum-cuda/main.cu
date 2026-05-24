@@ -205,22 +205,27 @@ int main(int argc, char* argv[])
 
       ComputeChannelSumNHWC (N, C, W*H, d_X, d_sum, d_sumsq, time, repeat);
 
+#ifdef VERIFY
       cudaMemcpy(h_sum, d_sum, output_size_bytes, cudaMemcpyDeviceToHost);
       ref_nhwc (N, C, W*H, h_X, r_sum, h_sumsq);
       bool ok = check(C, h_sum, r_sum);
-
+#endif
       printf("Average time of channel sum (nhwc): %f (ms)\n", (time * 1e-6f) / repeat);
+#ifdef VERIFY
       printf("Verification %s for channel sum (nhwc)\n", ok ? "PASS" : "FAIL");
-
+#endif
       ComputeChannelSumNCHW (N, C, W*H, d_X, d_sum, d_sumsq, time, repeat);
 
+#ifdef VERIFY
       cudaMemcpy(h_sum, d_sum, output_size_bytes, cudaMemcpyDeviceToHost);
       ref_nchw (N, C, W*H, h_X, r_sum, h_sumsq);
       ok = check(C, h_sum, r_sum);
-      
-      printf("Average time of channel sum (nchw): %f (ms)\n", (time * 1e-6f) / repeat);
-      printf("Verification %s for channel sum (nchw)\n", ok ? "PASS" : "FAIL");
+#endif
 
+      printf("Average time of channel sum (nchw): %f (ms)\n", (time * 1e-6f) / repeat);
+#ifdef VERIFY
+      printf("Verification %s for channel sum (nchw)\n", ok ? "PASS" : "FAIL");
+#endif
       cudaFree(d_X);
       cudaFree(d_sum);
       cudaFree(d_sumsq);

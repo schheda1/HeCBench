@@ -11,7 +11,9 @@
 #include "bpnn_layerforward.h"
 #include "bpnn_adjust_weights.h"
 
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 unsigned int num_threads = 0;
 unsigned int num_blocks = 0;
@@ -121,6 +123,7 @@ int bpnn_train_kernel(BPNN *net, float *eo, float *eh)
   auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   printf("Device offloading time = %lf(s)\n", time * 1e-9);
 
+#ifdef VERIFY
   reference (in, hid, out, net,
              input_weights_one_dim_r,
              input_weights_prev_one_dim,
@@ -134,6 +137,7 @@ int bpnn_train_kernel(BPNN *net, float *eo, float *eh)
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
 #ifdef OUTPUT
   for (int i = 0; i < (in+1); i++)

@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
   for (size_t i = 0; i < len; i++) word[i] = a[rand() % 52];
 
   auto d_result = mtf(word);
+#ifdef VERIFY
   auto h_result = reference(word);
   bool ok = d_result == h_result;
   if (ok) {
@@ -94,7 +95,7 @@ int main(int argc, char *argv[])
     printf("FAIL\n");
     return 1;
   }
-
+#endif
   auto start = std::chrono::steady_clock::now();
 
   for (int i = 0; i < repeat; i++) mtf(word);

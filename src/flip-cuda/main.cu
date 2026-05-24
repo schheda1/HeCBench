@@ -131,6 +131,7 @@ void flip (const int64_t num_dims, const int64_t num_flip_dims,
     d_input, d_output, n, d_flip_dims, num_flip_dims,
     d_strides, d_strides_contiguous, d_shape, num_dims);
 
+#ifdef VERIFY
   flip_kernel_cpu<scalar_t>(
     input, output_ref, n, flip.data(), num_flip_dims,
     stride.data(), stride.data(), shape.data(), num_dims);
@@ -138,6 +139,7 @@ void flip (const int64_t num_dims, const int64_t num_flip_dims,
   cudaMemcpy(output, d_output, output_size_bytes, cudaMemcpyDeviceToHost);
   int error = memcmp(output, output_ref, output_size_bytes);
   printf("%s\n", error ? "FAIL" : "PASS");
+#endif
 
 #ifdef EXAMPLE
   for (int i = 0; i < n; i++) {

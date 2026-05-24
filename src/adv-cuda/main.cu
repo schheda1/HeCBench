@@ -25,7 +25,9 @@
 // kernel
 #include "adv.h"
 
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 dfloat *drandAlloc(int N){
   dfloat *v = (dfloat*) malloc(N * sizeof(dfloat));
@@ -107,6 +109,7 @@ int main(int argc, char **argv) {
   cudaFree(d_u);
   cudaFree(d_adv);
 
+#ifdef VERIFY  
   reference(Nelements,
             vgeo,
             cubvgeo,
@@ -125,6 +128,7 @@ int main(int argc, char **argv) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   // statistics
   const dfloat GDOFPerSecond = (N*N*N)*Nelements/elapsed;

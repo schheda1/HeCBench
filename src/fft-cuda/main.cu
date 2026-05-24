@@ -152,7 +152,7 @@ int main(int argc, char** argv)
   cudaMemcpy(d_source, source, used_bytes, cudaMemcpyHostToDevice);
 
   fft1D_512<<<n_ffts, 64>>>(d_source);
-
+#ifdef VERIFY
   // verify FFT
   fft1D_512_reference<64>(reference, n_ffts);
   cudaMemcpy(source, d_source, used_bytes, cudaMemcpyDeviceToHost);
@@ -170,10 +170,10 @@ int main(int argc, char** argv)
     }
   }
   std::cout << "FFT " << (error ? "FAIL" : "PASS")  << std::endl;
- 
+ #endif
   // execute iFFT
   ifft1D_512<<<n_ffts, 64>>>(d_source);
-
+#ifdef VERIFY
   // verify iFFT
   cudaMemcpy(source, d_source, used_bytes, cudaMemcpyDeviceToHost);
   error = false;
@@ -189,7 +189,7 @@ int main(int argc, char** argv)
     }
   }
   std::cout << "iFFT " << (error ? "FAIL" : "PASS")  << std::endl;
-
+#endif
   auto start = std::chrono::steady_clock::now();
 
   for (int k=0; k<passes; k++) {

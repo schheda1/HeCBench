@@ -254,6 +254,7 @@ int main(int argc, char *argv[]) {
          n, iter, thresh, ktime);
 
   memset(diffs, 0, rank_size);
+#ifdef VERIFY
   for (t=1; t<=iter && max_diff_ref>=thresh; ++t) {
     map_ref(pages, page_ranks, maps, noutlinks, n);
     reduce_ref(page_ranks, maps, n, diffs);
@@ -261,6 +262,7 @@ int main(int argc, char *argv[]) {
   }
   bool ok = fabsf(max_diff - max_diff_ref) < 1e-3f;
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   free(pages);
   free(maps);

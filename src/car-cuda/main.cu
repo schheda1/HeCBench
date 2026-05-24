@@ -4,7 +4,9 @@
 #include <chrono>
 #include <cuda.h>
 #include "utils.h"
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 __global__ void car (
     const float *__restrict__ img,
@@ -150,6 +152,7 @@ int main(int argc, char* argv[]) {
   auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   printf("Average kernel execution time %f (s)\n", time * 1e-9f / repeat);
 
+  #ifdef VERIFY
   reference (img, kernel, offsets_h, offsets_v, output_ref, p, 1, padding);
 
   cudaMemcpy(output, d_output, output_size_byte, cudaMemcpyDeviceToHost);
@@ -158,6 +161,7 @@ int main(int argc, char* argv[]) {
   for (size_t i = 0; i < output_size; i++)
     rmse += (output_ref[i] - output[i]) * (output_ref[i] - output[i]);
   printf("RMSE: %f\n", sqrtf(rmse/output_size));
+#endif
 
   cudaFree(d_img);
   cudaFree(d_offsets_h);

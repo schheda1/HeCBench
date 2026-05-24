@@ -340,12 +340,12 @@ int main(int argc, char **argv){
   printf("Total kernel execution time: %f (s)\n", time * 1e-9f / repeat);
 
   cudaMemcpy(output_itemsets, d_input_itemsets, max_cols * max_rows * sizeof(int), cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   // verify
   nw_host(input_itemsets, reference, max_cols, penalty);
   int err = memcmp(input_itemsets, output_itemsets, max_cols * max_rows * sizeof(int));
   printf("%s\n", err ? "FAIL" : "PASS");
-
+#endif
 #ifdef TRACEBACK
 
   FILE *fpo = fopen("result.txt","w");

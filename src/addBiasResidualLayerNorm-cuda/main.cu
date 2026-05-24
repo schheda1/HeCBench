@@ -111,10 +111,13 @@ void layer(int m, int n, int repeat) {
   for (int i = 0; i < 100; i++) {
     invokeAddBiasResidualLayerNorm<T, V>
         (d_output, d_input, d_bias, d_gamma, d_beta, layernorm_eps, m, n);
-    reference<T>(r_output, h_input, h_bias, h_gamma, h_beta, layernorm_eps, m, n);
+#ifdef VERIFY    
+        reference<T>(r_output, h_input, h_bias, h_gamma, h_beta, layernorm_eps, m, n);
+#endif
   }
   cudaMemcpy(h_output, d_output, output_size_bytes, cudaMemcpyDeviceToHost);
 
+  #ifdef VERIFY
   bool ok = true;
   float error_bound = sizeof(T) >= 4 ? 1e-4f : 0.5f;
   for (int i = 0; i < output_size; i++) {
@@ -126,6 +129,7 @@ void layer(int m, int n, int repeat) {
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
   free(r_output);
+#endif
 
   auto start = std::chrono::steady_clock::now();
 

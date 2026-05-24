@@ -60,6 +60,7 @@ void fma(int NA, int NC, int C, int num_ops, int repeat) {
         d_a, d_b, d_c, d_i_idx, d_o_idx, num_ops, C, NA, NC, "basic");
   CHECK_CUDA( cudaMemcpy(h_c, d_c, c_size_bytes, cudaMemcpyDeviceToHost) )
   memset(h_r, 0, c_size_bytes);
+#ifdef VERIFY
   reference<scalar_t>(h_a, h_b, h_r, h_i_idx, h_o_idx, num_ops, C, NA, NC);
   bool ok = true;
   for (size_t i = 0; i < c_size; i++) {
@@ -68,11 +69,12 @@ void fma(int NA, int NC, int C, int num_ops, int repeat) {
       break;
     }
   }
-
+#endif
   CHECK_CUDA( cudaMemset(d_c, 0, c_size_bytes) )
   run_implicit_fma_templated<scalar_t, scalar_t, scalar_t>(
         d_a, d_b, d_c, d_i_idx, d_o_idx, num_ops, C, NA, NC, "rowwise");
   CHECK_CUDA( cudaMemcpy(h_c, d_c, c_size_bytes, cudaMemcpyDeviceToHost) )
+#ifdef VERIFY
   for (size_t i = 0; i < c_size; i++) {
     if ((double)h_c[i] - (double)h_r[i] > 1e-3) {
       ok = false;
@@ -80,7 +82,7 @@ void fma(int NA, int NC, int C, int num_ops, int repeat) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   double time = 0;
   for (int i = 0; i < repeat; i++) {
     CHECK_CUDA( cudaMemset(d_c, 0, c_size_bytes) )

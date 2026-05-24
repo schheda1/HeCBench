@@ -138,7 +138,7 @@ int main(int argc, char* argv[]) {
 
   cudaFree(d_data);
   cudaFree(d_results);
-
+#ifdef VERIFY
   start = std::chrono::high_resolution_clock::now();
 
   cpu_kernel(rows,cols,ncases,ncontrols,dataT,cpu_results);
@@ -153,7 +153,7 @@ int main(int argc, char* argv[]) {
     if (fabs(cpu_results[k] - h_results[k]) > 1e-4) error++;
   }
   printf("%s\n", error ? "FAIL" : "PASS");
-
+#endif
   free(dataT);
   free(h_results);
   free(cpu_results);

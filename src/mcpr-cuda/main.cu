@@ -59,9 +59,9 @@ int main(int argc, char* argv[]) {
   std::mt19937 gen(19937);
   std::normal_distribution<double> norm_dist(0.0,1.0);
   for (int i = 0; i < rands_size; i++) rands[i] = norm_dist(gen);
-
+#ifdef VERIFY
   reference(alphas, rands, probs_ref, n, K, M);
-
+#endif
   double *d_alphas, *d_rands, *d_probs;
   cudaMalloc((void**)&d_rands, rands_size_byte);
   cudaMalloc((void**)&d_alphas, alphas_size_byte);
@@ -87,14 +87,15 @@ int main(int argc, char* argv[]) {
   printf("Average execution time of compute_probs kernel: %f (s)\n", (time * 1e-9f) / repeat);
 
   cudaMemcpy(probs, d_probs, alphas_size_byte, cudaMemcpyDeviceToHost);
+#ifdef VERIFY  
   verify(probs, probs_ref, alphas_size);
-
+#endif
   // kernel 2
   double *t_rands = t(rands, K, M);
   double *t_alphas = t(alphas, K, n);
-
+#ifdef VERIFY
   reference_unitStrides(t_alphas, t_rands, probs_ref, n, K, M);
-
+#endif
   cudaMemcpy(d_rands, t_rands, rands_size_byte, cudaMemcpyHostToDevice);
   cudaMemcpy(d_alphas, t_alphas, alphas_size_byte, cudaMemcpyHostToDevice);
 
@@ -111,8 +112,9 @@ int main(int argc, char* argv[]) {
   printf("Average execution time of compute_probs_unitStrides kernel: %f (s)\n", (time * 1e-9f) / repeat);
 
   cudaMemcpy(probs, d_probs, alphas_size_byte, cudaMemcpyDeviceToHost);
+#ifdef VERIFY  
   verify(probs, probs_ref, alphas_size);
-
+#endif
   // kernel 3
   threads_per_block = 96;
   dim3 threads2 (threads_per_block);
@@ -133,8 +135,9 @@ int main(int argc, char* argv[]) {
   printf("Average execution time of compute_probs_unitStrides_sharedMem kernel: %f (s)\n", (time * 1e-9f) / repeat);
 
   cudaMemcpy(probs, d_probs, alphas_size_byte, cudaMemcpyDeviceToHost);
+#ifdef VERIFY  
   verify(probs, probs_ref, alphas_size);
-
+#endif
   // free memory
   cudaFree(d_alphas);
   cudaFree(d_rands);

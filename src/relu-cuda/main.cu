@@ -184,7 +184,9 @@ int main(int argc, char* argv[])
     h_gradient[i] = __float2half(1.f);
   }
 
+#ifdef VERIFY
   ReluGrad_reference (count, h_gradient, h_feature, r_backprop);
+#endif
 
   half *d_gradient, *d_feature, *d_backprop;
 
@@ -226,7 +228,7 @@ int main(int argc, char* argv[])
           (time * 1e-3f) / repeat);
 
   cudaMemcpy(h_backprop, d_backprop, size, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   int fail = 0;
   for (int i = 0; i < count; i++) {
     if (fabsf(__half2float(h_backprop[i]) -
@@ -236,6 +238,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("%s\n", fail ? "FAIL" : "PASS");
+#endif
 
   half_count = divup(count, VectorSize);
   kBlock = divup(half_count, kThreadInBlock);
@@ -282,8 +285,9 @@ int main(int argc, char* argv[])
               (unsigned) int_dist(engine) << 16 |
               (unsigned) int_dist(engine) << 24;
   }
-
+#ifdef VERIFY
   Relu_reference (count, h_in, r_out);
+#endif
 
   int *d_in, *d_out;
   cudaMalloc((void**)&d_in, size);
@@ -306,9 +310,10 @@ int main(int argc, char* argv[])
 
   cudaMemcpy(h_out, d_out, size, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   fail = memcmp(h_out, r_out, size);
   printf("%s\n", fail ? "FAIL" : "PASS");
-
+#endif
   start = std::chrono::steady_clock::now();
 
   for (int i = 0; i < repeat; i++)

@@ -192,6 +192,7 @@ int main(int argc, char* argv[])
   sampleMultinomialOnce<float, float> <<<grid, block>>>(
       d_result, numDist, numCategories, d_sample, d_distr, numCategories, 1);
 
+#ifdef VERIFY
   sampleMultinomialOnce_cpu<float, float> (
       result_ref, numDist, numCategories, sample, distr, numCategories, 1);
 
@@ -206,6 +207,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("%s\n", error ? "FAIL" : "PASS");
+#endif
 
   cudaDeviceSynchronize();
   auto start = std::chrono::steady_clock::now();

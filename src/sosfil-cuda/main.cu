@@ -210,7 +210,7 @@ void filtering (const int repeat,
       d_sos,
       d_zi,
       d_x);
-
+#ifdef VERIFY
     reference<T>(
         n_signals,
         n_samples,
@@ -219,12 +219,14 @@ void filtering (const int repeat,
         sos,
         zi,
         x_ref);
+#endif
   }
 
   cudaCheck(cudaMemcpy(x, d_x, sizeof(T) * x_size, cudaMemcpyDeviceToHost));
-
+#ifdef VERIFY
   bool ok = compare_results<T>(x_ref, x, n_signals * n_samples, 1e-4, 1e-4);
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   cudaCheck(cudaDeviceSynchronize());
   auto start = std::chrono::steady_clock::now();

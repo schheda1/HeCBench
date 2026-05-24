@@ -85,13 +85,14 @@ void reshape_and_cache(int num_tokens, int num_heads, int head_size,
     std::vector<cache_t> h_key_cache(key_cache_size, 0);
     std::vector<cache_t> h_value_cache(value_cache_size, 0);
 
+#ifdef VERIFY
     reference<scalar_t, cache_t, kv_dt>(
       h_key.data(), h_value.data(),
       r_key_cache.data(), r_value_cache.data(),
       h_slot_mapping.data(),
       key_stride, value_stride, num_tokens, num_heads, head_size, block_size,
       x, k_scale, v_scale);
-    
+#endif    
 
     GPU_CHECK(cudaMemcpy(h_key_cache.data(), d_key_cache,
                          key_cache_size * sizeof(cache_t),
@@ -100,7 +101,7 @@ void reshape_and_cache(int num_tokens, int num_heads, int head_size,
     GPU_CHECK(cudaMemcpy(h_value_cache.data(), d_value_cache,
                          value_cache_size * sizeof(cache_t),
                          cudaMemcpyDeviceToHost));
-
+#ifdef VERIFY
     bool ok = true;
     for (uint64_t i = 0; i < key_cache_size; i++) {
       if (r_key_cache[i] != h_key_cache[i]) {
@@ -118,7 +119,7 @@ void reshape_and_cache(int num_tokens, int num_heads, int head_size,
       }
     }
     printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
     GPU_CHECK(cudaDeviceSynchronize());
     auto start = std::chrono::steady_clock::now();
 

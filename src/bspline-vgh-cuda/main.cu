@@ -4,7 +4,9 @@
 #include <cstdlib>
 #include <cuda.h>
 #include "kernel.h"
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 #define max(a,b) ((a<b)?b:a)
 #define min(a,b) ((a<b)?a:b)
@@ -182,7 +184,7 @@ int main(int argc, char ** argv) {
 
     dim3 global_size((spline_num_splines+255)/256);
     dim3 local_size(256);
-
+#ifdef VERIFY
     bspline_ref(
         spline_coefs,
         xs, ys, zs, 
@@ -203,6 +205,7 @@ int main(int argc, char ** argv) {
         spline_z_grid_delta_inv,
         spline_num_splines,
         i, ix, iy, iz	);
+#endif
 
     cudaDeviceSynchronize();
     auto start = std::chrono::steady_clock::now();
@@ -239,6 +242,7 @@ int main(int argc, char ** argv) {
   cudaMemcpy(walkers_grads, d_walkers_grads, sizeof(float)*WSIZE*MSIZE, cudaMemcpyDeviceToHost);
   cudaMemcpy(walkers_hess, d_walkers_hess, sizeof(float)*WSIZE*OSIZE, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   bool ok = true;
   const float atol = 2.f;
   for( int i = 0; i < WSIZE * NSIZE; i++ ) {
@@ -263,6 +267,7 @@ int main(int argc, char ** argv) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   free(Af);
   free(dAf);

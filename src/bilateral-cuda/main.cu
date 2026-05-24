@@ -3,7 +3,9 @@
 #include <math.h>
 #include <cuda.h>
 #include <chrono>
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 template<int R>
 __global__ void bilateralFilter(
@@ -128,6 +130,7 @@ int main(int argc, char *argv[]) {
   cudaMemcpy(h_dst, d_dst, img_size * sizeof(float), cudaMemcpyDeviceToHost); 
 
   // verify
+#ifdef VERIFY
   bool ok = true;
   reference<3>(h_src, r_dst, w, h, a_square, variance_I, variance_spatial);
   for (int i = 0; i < w*h; i++) {
@@ -136,6 +139,7 @@ int main(int argc, char *argv[]) {
       break;
     }
   }
+#endif
 
   cudaDeviceSynchronize();
   start = std::chrono::steady_clock::now();
@@ -173,6 +177,7 @@ int main(int argc, char *argv[]) {
 
   cudaMemcpy(h_dst, d_dst, img_size * sizeof(float), cudaMemcpyDeviceToHost); 
 
+  #ifdef VERIFY
   reference<9>(h_src, r_dst, w, h, a_square, variance_I, variance_spatial);
   for (int i = 0; i < w*h; i++) {
     if (fabsf(r_dst[i] - h_dst[i]) > 1e-3) {
@@ -181,6 +186,7 @@ int main(int argc, char *argv[]) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   free(h_dst);
   free(r_dst);

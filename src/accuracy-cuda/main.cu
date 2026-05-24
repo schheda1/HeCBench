@@ -4,7 +4,9 @@
 #include <random>
 #include <cuda.h>
 #include <cub/cub.cuh>
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 #define GPU_NUM_THREADS 256
 
@@ -135,9 +137,9 @@ int main(int argc, char* argv[])
   for (int i = 0; i < data_size; i++) {
     data[i] = distr(g);
   }
-
+#ifdef VERIFY
   int count_ref = reference(nrows, ndims, top_k, data, label);
-
+#endif
   int *d_label;
   cudaMalloc((void**)&d_label, label_size_bytes);
   cudaMemcpy(d_label, label, label_size_bytes, cudaMemcpyHostToDevice);
@@ -186,7 +188,9 @@ int main(int argc, char* argv[])
     time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
     printf("Average execution time of accuracy kernel2: %f (us)\n", (time * 1e-3f) / repeat);
     cudaMemcpy(&count, d_count, sizeof(int), cudaMemcpyDeviceToHost);
+    #ifdef VERIFY
     printf("%s\n", (count == count_ref) ? "PASS" : "FAIL");
+    #endif
   }
 
   cudaFree(d_label);

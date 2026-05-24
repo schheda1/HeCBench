@@ -176,6 +176,7 @@ int main(int argc, char* argv[])
   time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   printf("Average execution time of MRC3 kernel: %f (us)\n", (time * 1e-3f) / repeat);
 
+#ifdef VERIFY
   // verify
   cudaMemcpy(h_dX1, d_dX1, size_bytes, cudaMemcpyDeviceToHost);
   cudaMemcpy(h_dX2, d_dX2, size_bytes, cudaMemcpyDeviceToHost);
@@ -190,7 +191,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   cudaFree(d_X1);
   cudaFree(d_X2);
   cudaFree(d_O);

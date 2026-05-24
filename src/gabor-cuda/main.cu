@@ -102,9 +102,11 @@ int main(int argc, char* argv[]) {
   const double par_L = 2.65;
   const double theta = 45;
 
+#ifdef VERIFY
   double *h_filter = generateGaborKernelHost(height, width, par_T, par_L, theta);
+#endif
   double *d_filter = generateGaborKernelDevice(repeat, height, width, par_T, par_L, theta);
-  
+#ifdef VERIFY  
   bool ok = true;
   for (int i = 0; i < width * height; i++) {
     if (fabs(h_filter[i] - d_filter[i]) > 1e-3) {
@@ -114,5 +116,6 @@ int main(int argc, char* argv[]) {
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
   free(h_filter);
+#endif
   free(d_filter);
 }

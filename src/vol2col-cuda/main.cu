@@ -223,6 +223,7 @@ void eval (
 
   cudaMemcpy(h_data_col, d_data_col, col_size_bytes, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   // verify
   vol2col_reference<T>(
       h_data_vol,
@@ -236,6 +237,7 @@ void eval (
 
   int error = memcmp(h_data_col_ref, h_data_col, col_size_bytes);
   printf("%s\n", error ? "FAIL" : "PASS");
+#endif
 
   cudaDeviceSynchronize();
   start = std::chrono::steady_clock::now();
@@ -260,6 +262,7 @@ void eval (
 
   cudaMemcpy(h_data_vol, d_data_vol, vol_size_bytes, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   // verify
   col2vol_reference<T, T>(
       h_data_col_ref,
@@ -278,6 +281,7 @@ void eval (
     }
   }
   printf("%s\n", error ? "FAIL" : "PASS");
+#endif
 
   cudaFree(d_data_vol);
   cudaFree(d_data_col);

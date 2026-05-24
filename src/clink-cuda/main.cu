@@ -3,8 +3,9 @@
 #include <cstring>
 #include <cuda.h>
 #include "kernel.h"
+#ifdef VERIFY
 #include "reference.h"
-
+#endif
 #ifdef DEBUG
 void dump (const char* work_path, const char* result_filename, const float* result) {
   char file_name[100];
@@ -163,10 +164,10 @@ int main(int argc, char* argv[])
     auto elapsedTime =
       std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
     std::cout << "Device offload time: " <<  elapsedTime << " ms\n";
-
+#ifdef VERIFY
     if (n == 0)
       reference(sample_input, inW, intW, intB, outW, &outB, infer1_out);
-
+#endif
 #ifdef DEBUG
     dump(work_path, result1_filename, infer1_out);
 #endif
@@ -178,10 +179,10 @@ int main(int argc, char* argv[])
     elapsedTime =
       std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
     std::cout << "Device offload time: " <<  elapsedTime << " ms\n";
-
+#ifdef VERIFY
     if (n == 0)
       reference(sample_input, inW, intW, intB, outW, &outB, infer2_out);
-
+#endif
 #ifdef DEBUG
     dump(work_path, result2_filename, infer2_out);
 #endif

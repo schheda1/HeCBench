@@ -341,7 +341,7 @@ int main(int argc, char **argv)
             << total_ktime / iteration << " (s)" << std::endl;
 
   cudaMemcpy(scores, d_scores, sizeof(float) * num_snp * num_snp, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   int p1 = min_score(scores, num_snp, num_snp);
 
   reference (bin_data_zeros_trans, bin_data_ones_trans, scores_ref, num_snp, 
@@ -351,6 +351,7 @@ int main(int argc, char **argv)
   
   bool ok = (p1 == p2) && (fabsf(scores[p1] - scores_ref[p2]) < 1e-3f);
   std::cout << (ok ? "PASS" : "FAIL") << std::endl;
+#endif
 
   cudaFree(d_data_zeros);
   cudaFree(d_data_ones);

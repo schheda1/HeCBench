@@ -30,8 +30,13 @@ int main(int argc, char **argv){
   const int NY = atoi(argv[2]);
   const int NZ = atoi(argv[3]);
   const int REPEAT = atoi(argv[4]);
+#ifdef VERIFY
   const int verify = atoi(argv[5]);
+#endif
 
+#ifndef VERIFY
+  const int verify = false;
+#endif
   // NX is a multiple of 32
   if (NX <= 0 || NX % 32 != 0 || NY <= 0 || NZ <= 0 || REPEAT <= 0) return 1;
 

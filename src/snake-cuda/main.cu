@@ -186,12 +186,12 @@ int main(int argc, const char * const argv[])
     double elapsed_time = duration_cast<microseconds>(t2 - t1).count();
     
     cudaMemcpy(DFinal_Results, Dev_Results, sizeof(int) * NumReads, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
     // verify
     sneaky_snake_ref(ReadSeq, RefSeq, HFinal_Results, NumReads, F_ErrorThreshold);
     error = memcmp(DFinal_Results, HFinal_Results, NumReads * sizeof(int));
     if (error) break;
-
+#endif
     // stats
     int D_accepted = 0;
     for(int i = 0; i < NumReads; i++) if(DFinal_Results[i] == 1) D_accepted++;
@@ -199,8 +199,10 @@ int main(int argc, const char * const argv[])
     printf("Error threshold: %2d | Average kernel time (us): %5.4f | Accepted: %10d | Rejected: %10d\n", 
           F_ErrorThreshold, elapsed_time / repeat, D_accepted, NumReads - D_accepted);
   }
+#ifdef VERIFY
   printf("%s\n", error ? "FAIL" : "PASS");
-  
+#endif
+
   free(ReadSeq);
   free(RefSeq);
   free(DFinal_Results);

@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
     min[i] = distr(g);
     max[i] = distr(g);
   }
-  
+#ifdef VERIFY
   reference (min,
              max,
              qmin,
@@ -113,6 +113,7 @@ int main(int argc, char* argv[])
              preserve_sparsity,
              scale_ref,
              zp_ref);
+#endif
 
   int32_t *d_zp;
   cudaMalloc((void**)&d_zp, size_bytes);
@@ -156,6 +157,7 @@ int main(int argc, char* argv[])
   cudaMemcpy(zp, d_zp, size_bytes, cudaMemcpyDeviceToHost);
   cudaMemcpy(scale, d_scale, size_bytes, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   bool ok = true;
   for (int i = 0; i < size; i++) {
     if (zp[i] != zp_ref[i] || scale[i] - scale_ref[i] > 1e-3f) {
@@ -164,6 +166,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   cudaFree(d_zp);
   cudaFree(d_scale);

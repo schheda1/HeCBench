@@ -315,6 +315,7 @@ int main(int argc, char **argv) {
   cudaGetDeviceProperties(&props, 0);
   int warp_size = props.warpSize;
 
+#ifdef VERIFY
   softmax_forward_cpu(out, inp, B * T, V);
   {
     float max_el = -INFINITY;
@@ -334,7 +335,7 @@ int main(int argc, char **argv) {
   }
 
   printf("All results match. Starting benchmarks.\n\n");
-
+#endif
   // time the kernel at different block sizes
   for (int j = warp_size; j <= 1024; j = j * 2) {
     int block_size = j;

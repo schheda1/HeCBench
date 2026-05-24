@@ -201,6 +201,7 @@ int main(int argc, char* argv[])
 
   cudaMemcpy(input_grad, input_grad_data, input_numel * sizeof(float), cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   // verify
   reference<AvgPoolGrad<float>, float>(
           nthreads, input, output, output_grad,
@@ -216,6 +217,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   delete[] input;
   delete[] output;

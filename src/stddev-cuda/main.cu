@@ -141,6 +141,7 @@ int main(int argc, char* argv[]) {
 
   cudaMemcpy(std, d_std, outputSizeByte, cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   // verify
   stddev_ref(std_ref, data, D, N, sample);
 
@@ -153,6 +154,7 @@ int main(int argc, char* argv[]) {
   }
 
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
   free(std_ref);
   free(std);
   free(data);

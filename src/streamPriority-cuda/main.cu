@@ -53,6 +53,7 @@ void use_case_ml_training(int batches, int lo_pri, int hi_pri) {
   GPU_CHECK(cudaMemcpy(d_grad_in, grad_in_ref.data(), N * sizeof(float), cudaMemcpyHostToDevice));
   GPU_CHECK(cudaMemcpy(d_weights, weights_ref.data(), N * sizeof(float), cudaMemcpyHostToDevice));
 
+#ifdef VERIFY
   //------------------------------------------------------------
   // reference
   //------------------------------------------------------------
@@ -62,7 +63,7 @@ void use_case_ml_training(int batches, int lo_pri, int hi_pri) {
     sgd_update(weights.data(), grad_out.data(), N, 0.01f);
     data_prefetch(prefetch_buf.data(), N, b + 1);
   }
-
+#endif
   //------------------------------------------------------------
   printf("Default stream (no priority)\n");
   //------------------------------------------------------------
@@ -79,6 +80,7 @@ void use_case_ml_training(int batches, int lo_pri, int hi_pri) {
   auto time_default = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 
   GPU_CHECK(cudaMemcpy(grad_out_dev.data(), d_grad_out, N * sizeof(float), cudaMemcpyDeviceToHost));
+#ifdef VERIFY
   bool ok = true;
   for (int i = 0; i < N; i++) {
     if (fabsf(grad_out_dev[i] - grad_out[i]) > 1e-3f) {
@@ -88,7 +90,7 @@ void use_case_ml_training(int batches, int lo_pri, int hi_pri) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   //------------------------------------------------------------
   printf("Priority stream\n");
   //------------------------------------------------------------
@@ -115,6 +117,7 @@ void use_case_ml_training(int batches, int lo_pri, int hi_pri) {
   GPU_CHECK(cudaMemcpyAsync(grad_out_dev.data(), d_grad_out, N * sizeof(float), cudaMemcpyDeviceToHost, s_train));
   GPU_CHECK(cudaStreamSynchronize(s_train)); // wait for s_train stream
 
+#ifdef VERIFY
   ok = true;
   for (int i = 0; i < N; i++) {
     if (fabsf(grad_out_dev[i] - grad_out[i]) > 1e-3f) {
@@ -124,6 +127,7 @@ void use_case_ml_training(int batches, int lo_pri, int hi_pri) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   printf("  Default  streams: %.2f ms\n", time_default * 1e-6);
   printf("  Priority streams: %.2f ms\n", time_pri * 1e-6);

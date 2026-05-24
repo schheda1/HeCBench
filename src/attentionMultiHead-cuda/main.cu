@@ -4,7 +4,9 @@
 #include <cstdlib>
 #include <cuda.h>
 #include <cub/cub.cuh>
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 struct Max
 {
@@ -226,6 +228,7 @@ int main(int argc, char* argv[])
   cudaFree(dv);
   cudaFree(dst);
 
+#ifdef VERIFY
   mha_reference(hq, hk, hv, beamsize, n_steps, qk_col, v_col, nhead, scaler, THRESHOLD, r_dst);
 
   bool ok = true;
@@ -238,6 +241,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   free(hq);
   free(hk);

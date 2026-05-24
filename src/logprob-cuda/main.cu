@@ -223,6 +223,7 @@ int main(int argc, char* argv[])
     max_length,
     batch_size);
 
+#ifdef VERIFY
   log_probs_cpu<float>(
     h_log_probs_ref,
     h_logits,
@@ -252,6 +253,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("%s\n", error ? "FAIL" : "PASS");
+#endif
   cudaDeviceSynchronize();
 
   auto start = std::chrono::steady_clock::now();

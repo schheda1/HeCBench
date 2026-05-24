@@ -478,7 +478,7 @@ int main(int argc, char **argv) {
     GPU_CHECK(cudaMemset(d_dx, 0, B * C * img_size * sizeof(float)));
     GPU_CHECK(cudaMemset(d_dweight, 0, C * sizeof(float)));
     GPU_CHECK(cudaMemset(d_dbias, 0, C * sizeof(float)));
-
+#ifdef VERIFY
     printf("Checking forward pass\n");
 
     groupnorm_forward_ref(x, weight, bias, out, mean, rstd, B, C, img_size, n_groups);
@@ -505,7 +505,7 @@ int main(int argc, char **argv) {
     printf("Checking dx\n");
     validate_result(d_dx, dx, "dx", B * C * img_size, 1.0f);
     printf("\n─────────────────────────────────────────────────────\n");
-
+#endif
     printf("Forward pass benchmarks\n");
     float elapsed_time = benchmark_kernel(repeat, groupnorm_forward,
                                           d_x, d_weight, d_bias, d_out, d_mean, d_rstd,

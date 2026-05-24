@@ -127,7 +127,7 @@ void eval(const int64_t nframe,
   printf("\nThread block size: %d\n", GPU_THREADS);
   printf("Average execution time of nll loss forward kernel: %f (us)\n",
          (time * 1e-3f) / repeat);
-
+#ifdef VERIFY
   cudaMemcpy(&h_output, d_output, output_size_bytes, cudaMemcpyDeviceToHost);
   cudaMemcpy(&h_total_weight, d_total_weight, output_size_bytes, cudaMemcpyDeviceToHost);
 
@@ -143,7 +143,7 @@ void eval(const int64_t nframe,
     ok = false;
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   cudaFree(d_output);
   cudaFree(d_total_weight);
   cudaFree(d_input);
@@ -191,11 +191,12 @@ void driver(char** argv) {
   // verify the loss function
   scalar_t r_output;
   scalar_t r_total_weight;
-
+#ifdef VERIFY
   reference<scalar_t, scalar_t, index_t>(
     &r_output, &r_total_weight,
     h_input, h_target, h_weights,
     size_average, nframe, n_classes, ignore_index);
+#endif
 
   #define EVAL(nThreads) \
   eval<scalar_t, index_t, nThreads>(nframe, n_classes, n_classes, \

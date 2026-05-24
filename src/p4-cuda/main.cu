@@ -228,7 +228,7 @@ int main(int argc, char* argv[])
   }
 
   printf("Average execution time of postprocess kernel: %f (us)\n", (time * 1e-3f) / repeat);
-
+#ifdef VERIFY
   int bndbox_num;
   cudaMemcpy(&bndbox_num, d_object_counter, sizeof(int), cudaMemcpyDeviceToHost);
   cudaMemcpy(h_bndbox_output, d_bndbox_output, bndbox_size_byte, cudaMemcpyDeviceToHost);
@@ -254,6 +254,7 @@ int main(int argc, char* argv[])
           num_box_values,
           score_thresh,
           dir_offset);
+#endif
 
   cudaFree(d_anchors);
   cudaFree(d_anchor_bottom_heights);

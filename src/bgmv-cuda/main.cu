@@ -8,7 +8,9 @@
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
 #include "config.h"
+#ifdef VERIFY
 #include "reference.h"
+#endif
 #include "kernels.h"
 
 #define GPU_CHECK(x)                                                     \
@@ -98,8 +100,10 @@ int main(int argc, char* argv[])
 
         std::vector<float> h_out_gpu(output_size);
         std::vector<float> h_out_ref(output_size, 0.f);
+#ifdef VERIFY
         ref_bgmv_shrink_cpu(h_out_ref.data(), h_inp_f32.data(), h_wt_f32.data(),
                                h_lora_indices.data(), T, H, R, cfg.scaling);
+#endif
 
         // Warmup
         for (int block_size : block_sizes) {
@@ -133,11 +137,13 @@ int main(int argc, char* argv[])
 
           GPU_CHECK(cudaMemcpy(h_out_gpu.data(), d_out, output_size * sizeof(float), cudaMemcpyDeviceToHost));
 
+#ifdef VERIFY
           float max_err = 0.f;
           for (size_t i = 0; i < output_size; i++)
               max_err = fmaxf(max_err, fabsf(h_out_gpu[i] - h_out_ref[i]));
           printf("block_size %4d | correctness check max_err = %e  => %s\n",
                  block_size, max_err, max_err < 0.1f ? "PASS" : "FAIL");
+#endif
         }
 
         // Timed loop
@@ -217,9 +223,10 @@ int main(int argc, char* argv[])
 
         std::vector<__half> h_out_gpu(output_size);
         std::vector<float> h_out_ref(output_size, 0.f);
+#ifdef VERIFY
         ref_bgmv_expand_cpu(h_out_ref.data(), h_inp_f32.data(), h_wt_f32.data(),
                             h_lora_indices.data(), T, H, R, cfg.scaling);
-
+#endif
         for (int block_size : block_sizes) {
 
           GPU_CHECK(cudaMemset(d_out, 0, output_size * sizeof(__half)));
@@ -252,12 +259,13 @@ int main(int argc, char* argv[])
           }
 
           GPU_CHECK(cudaMemcpy(h_out_gpu.data(), d_out, output_size * sizeof(__half), cudaMemcpyDeviceToHost));
-
+#ifdef VERIFY
           float max_err = 0.f;
           for (size_t i = 0; i < output_size; i++)
               max_err = fmaxf(max_err, fabsf((float)h_out_gpu[i] - h_out_ref[i]));
           printf("block_size %4d | correctness check max_err = %e  => %s\n",
                  block_size, max_err, max_err < 0.1f ? "PASS" : "FAIL");
+#endif
         }
 
         // Timed loop

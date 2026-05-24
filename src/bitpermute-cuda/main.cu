@@ -8,7 +8,9 @@
 #include <cstring>
 #include <cuda.h>
 #include "kernels.h"
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 void cuda_check(cudaError_t error, const char *file, int line) {
     if (error != cudaSuccess) {
@@ -67,10 +69,14 @@ void bit_permute(const int lg_domain_size, const int repeat)
   // warmup and verify
   cudaCheck(cudaMemcpy(d_inout, inout, domain_size_bytes, cudaMemcpyHostToDevice));
   bit_rev(d_inout, d_inout, lg_domain_size);
+#ifdef VERIFY
   bit_rev_cpu(out, inout, lg_domain_size);
+#endif
   cudaCheck(cudaMemcpy(inout, d_inout, domain_size_bytes, cudaMemcpyDeviceToHost));
+#ifdef VERIFY
   int error = memcmp(out, inout, domain_size_bytes);
   printf("%s\n", error ? "FAIL" : "PASS");
+#endif
 
   auto start = std::chrono::steady_clock::now();
 

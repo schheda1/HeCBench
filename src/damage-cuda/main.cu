@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <cuda.h>
 #include <chrono>
+#ifdef VERIFY
 #include "reference.h"
-
+#endif
 // threads per block
 #define BLOCK_SIZE 256
 
@@ -77,9 +78,9 @@ int main(int argc, char* argv[]) {
 
   cudaMemcpy(n_neigh, d_n_neigh, sizeof(int)*m, cudaMemcpyDeviceToHost);
   cudaMemcpy(damage, d_damage, sizeof(double)*m, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   validate(BLOCK_SIZE, m, n, nlist, family, n_neigh, damage);
-
+#endif
   start = std::chrono::steady_clock::now();
 
   for (int i = 0; i < repeat; i++)
@@ -93,9 +94,9 @@ int main(int argc, char* argv[]) {
 
   cudaMemcpy(n_neigh, d_n_neigh, sizeof(int)*m, cudaMemcpyDeviceToHost);
   cudaMemcpy(damage, d_damage, sizeof(double)*m, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   validate(BLOCK_SIZE, m, n, nlist, family, n_neigh, damage);
-
+#endif
   cudaFree(d_nlist);
   cudaFree(d_family);
   cudaFree(d_n_neigh);

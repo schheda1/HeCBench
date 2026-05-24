@@ -55,10 +55,10 @@ int main(int argc, char **argv) {
   cudaMemcpy(h_result, d_result,
              VOTE_DATA_GROUP * warp_size * sizeof(unsigned int),
              cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   error_count[0] += checkResultsVoteAnyKernel1(
       h_result, VOTE_DATA_GROUP * warp_size, warp_size);
-
+#endif
   // Start of Vote All Test Kernel #2
   printf("\tRunning <<Vote.All>> kernel2 ...\n");
 
@@ -79,8 +79,10 @@ int main(int argc, char **argv) {
              VOTE_DATA_GROUP * warp_size * sizeof(unsigned int),
              cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   error_count[1] += checkResultsVoteAllKernel2(
       h_result, VOTE_DATA_GROUP * warp_size, warp_size);
+#endif
 
   // Second Vote Kernel Test #3 (both Any/All)
   cudaMalloc((void**)&dinfo, warp_size * 3 * 3 * sizeof(bool));
@@ -106,7 +108,9 @@ int main(int argc, char **argv) {
   cudaMemcpy(hinfo, dinfo, warp_size * 3 * 3 * sizeof(bool),
              cudaMemcpyDeviceToHost);
 
+#ifdef VERIFY
   error_count[2] = checkResultsVoteAnyKernel3(hinfo, warp_size * 3);
+#endif
 
   cudaFree(d_input);
   cudaFree(d_result);

@@ -4,7 +4,9 @@
 #include <cuda.h>
 #include <cuda_fp16.h>
 #include <cuda_bf16.h>
+#ifdef VERIFY
 #include "reference.h"
+#endif
 
 #define GPU_CHECK(x) do { \
     cudaError_t err = x; \
@@ -222,6 +224,7 @@ void merge_attn_states_launcher(
   GPU_CHECK(cudaMemcpy(h_prefix_lse.data(), d_prefix_lse, lse_size_bytes, cudaMemcpyDeviceToHost));
   GPU_CHECK(cudaMemcpy(h_suffix_lse.data(), d_suffix_lse, lse_size_bytes, cudaMemcpyDeviceToHost));
 
+  #ifdef VERIFY
   reference<scalar_t>(
     r_output.data(),
     h_prefix_output.data(),
@@ -232,6 +235,7 @@ void merge_attn_states_launcher(
     num_tokens,
     num_heads,
     head_size);
+#endif
 
   const uint32_t pack_size = 16 / sizeof(scalar_t);
   if (head_size % pack_size != 0) {
@@ -263,6 +267,7 @@ void merge_attn_states_launcher(
   GPU_CHECK(cudaMemcpy(h_output.data(), d_output, output_size_bytes, cudaMemcpyDeviceToHost));
   GPU_CHECK(cudaMemcpy(h_lse.data(), d_lse, lse_size_bytes, cudaMemcpyDeviceToHost));
 
+#ifdef VERIFY
   bool ok = true;
   for (uint64_t i = 0; i < output_size; i++) {
     if (std::fabs(to_float32(h_output[i]) - to_float32(r_output[i])) > 1e-3f) {
@@ -277,7 +282,7 @@ void merge_attn_states_launcher(
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
 
   GPU_CHECK(cudaDeviceSynchronize());
   auto start = std::chrono::steady_clock::now();

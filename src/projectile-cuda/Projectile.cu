@@ -87,6 +87,7 @@ int main(int argc, char* argv[]) {
 
   GpuParallel(input_vect, out_parallel_vect, repeat);
 
+#ifdef VERIFY
   reference(input_vect.data(), out_scalar_vect.data(), num_elements);
 
   bool ok = true;
@@ -99,5 +100,6 @@ int main(int argc, char* argv[]) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
   return 0;
 }

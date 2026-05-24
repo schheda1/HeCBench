@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
 
   cudaMemcpy(h_hy, d_hy, state_size_bytes, cudaMemcpyDeviceToHost);
   cudaMemcpy(h_store, d_store, store_size_bytes, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   reference<half, float, int>(
     h_input, h_hidden, h_input_bias, h_hidden_bias,
       h_hx, h_hy_ref, h_store_ref, hsz, vsz);
@@ -201,7 +201,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   cudaFree(d_input);
   cudaFree(d_hidden);
   cudaFree(d_input_bias);

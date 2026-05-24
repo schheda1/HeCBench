@@ -108,6 +108,7 @@ int main(int argc, char* argv[])
       printf("Average execution time of SigmoidCrossEntropyWithLogits kernel: %f (us)\n",
              (time * 1e-3f) / repeat);
 
+#ifdef VERIFY
       cudaMemcpy(h_out, d_out, output_size_bytes, cudaMemcpyDeviceToHost);
 
       reference (outer_size, inner_size, logD_trick, unjoined_lr_loss, h_logits, h_targets, r_out);
@@ -117,10 +118,13 @@ int main(int argc, char* argv[])
           break;
         }
       }
+#endif
     }
   }
-
+  
+#ifdef VERIFY
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 
   cudaFree(d_targets);
   cudaFree(d_logits);

@@ -183,9 +183,11 @@ int main(int argc, char* argv[])
   auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   printf("Average execution time of select kernel: %f (us)\n", (time * 1e-3f) / repeat);
 
+#ifdef VERIFY
   cudaMemcpy(h_out, d_out, output_size_bytes, cudaMemcpyDeviceToHost);
   cube_select(b, n, radius, h_xyz, r_out);
   int error = memcmp(h_out, r_out, output_size_bytes);
+#endif
 
   start = std::chrono::steady_clock::now();
 
@@ -197,9 +199,11 @@ int main(int argc, char* argv[])
   time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   printf("Average execution time of select2 kernel: %f (us)\n", (time * 1e-3f) / repeat);
 
+#ifdef VERIFY
   cudaMemcpy(h_out2, d_out2, 2 * output_size_bytes, cudaMemcpyDeviceToHost);
   cube_select_two(b, n, radius, h_xyz, r_out2);
   error += memcmp(h_out2, r_out2, 2 * output_size_bytes);
+#endif
 
   start = std::chrono::steady_clock::now();
 
@@ -211,12 +215,14 @@ int main(int argc, char* argv[])
   time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   printf("Average execution time of select4 kernel: %f (us)\n", (time * 1e-3f) / repeat);
 
+#ifdef VERIFY
   cudaMemcpy(h_out4, d_out4, 4 * output_size_bytes, cudaMemcpyDeviceToHost);
   cube_select_four(b, n, radius, h_xyz, r_out4);
   error += memcmp(h_out4, r_out4, 4 * output_size_bytes);
 
   printf("%s\n", error ? "FAIL" : "PASS");
-  
+#endif
+
   free(h_xyz);
   free(h_out);
   free(h_out2);

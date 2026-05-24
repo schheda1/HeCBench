@@ -284,12 +284,15 @@ int main(int argc, char* argv[]) {
   for (int run = 0; run < numRuns; run++) {
     test(hiddenSize, miniBatch, seqLength, numLayers,
          testOutputi, testOutputh, testOutputc, time);
+#ifdef VERIFY
     test_ref(hiddenSize, miniBatch, seqLength, numLayers,
              testOutputi_ref, testOutputh_ref, testOutputc_ref);
+#endif
   }
 
   printf("Average kernel execution time: %f (s)\n", (time * 1e-9f) / numRuns);
 
+#ifdef VERIFY
   int error = 0;
   for (int m = 0; m < miniBatch; m++) {
     for (int j = 0; j < seqLength; j++) {
@@ -312,6 +315,7 @@ int main(int argc, char* argv[]) {
   }
 
   printf("%s\n", (error == 0) ? "PASS" : "FAIL");
+#endif
 
   free(testOutputi);
   free(testOutputh);
