@@ -71,9 +71,6 @@ void bit_permute(const int lg_domain_size, const int repeat)
   bit_rev(d_inout, d_inout, lg_domain_size);
 #ifdef VERIFY
   bit_rev_cpu(out, inout, lg_domain_size);
-#endif
-  cudaCheck(cudaMemcpy(inout, d_inout, domain_size_bytes, cudaMemcpyDeviceToHost));
-#ifdef VERIFY
   int error = memcmp(out, inout, domain_size_bytes);
   printf("%s\n", error ? "FAIL" : "PASS");
 #endif

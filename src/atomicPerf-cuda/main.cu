@@ -114,11 +114,13 @@ void atomicPerf (int n, int t, int repeat)
 
   CHECK_ERROR( cudaMemcpy(h_data, d_data, data_size, cudaMemcpyDeviceToHost) );
   memcpy(r_data, data, data_size);
+#ifdef VERIFY
   for(int i=0; i<repeat; i++)
     BlockRangeAtomicOnGlobalMem_ref<T>(r_data, n);
   fail = memcmp(h_data, r_data, data_size);
   printf("%s\n", fail ? "FAIL" : "PASS");
-  
+#endif
+
   CHECK_ERROR( cudaMemcpy(d_data, data, data_size, cudaMemcpyHostToDevice) );
   CHECK_ERROR( cudaDeviceSynchronize() );
   start = std::chrono::steady_clock::now();
@@ -134,10 +136,12 @@ void atomicPerf (int n, int t, int repeat)
 
   CHECK_ERROR( cudaMemcpy(h_data, d_data, data_size, cudaMemcpyDeviceToHost) );
   memcpy(r_data, data, data_size);
+#ifdef VERIFY  
   for(int i=0; i<repeat; i++)
     WarpRangeAtomicOnGlobalMem_ref<T>(r_data, n);
   fail = memcmp(h_data, r_data, data_size);
   printf("%s\n", fail ? "FAIL" : "PASS");
+#endif
 
   CHECK_ERROR( cudaMemcpy(d_data, data, data_size, cudaMemcpyHostToDevice) );
   CHECK_ERROR( cudaDeviceSynchronize() );
@@ -154,10 +158,12 @@ void atomicPerf (int n, int t, int repeat)
 
   CHECK_ERROR( cudaMemcpy(h_data, d_data, data_size, cudaMemcpyDeviceToHost) );
   memcpy(r_data, data, data_size);
+#ifdef VERIFY  
   for(int i=0; i<repeat; i++)
     SingleRangeAtomicOnGlobalMem_ref<T>(r_data, i % BLOCK_SIZE, n);
   fail = memcmp(h_data, r_data, data_size);
   printf("%s\n", fail ? "FAIL" : "PASS");
+#endif
 
   CHECK_ERROR( cudaMemcpy(d_data, data, data_size, cudaMemcpyHostToDevice) );
   CHECK_ERROR( cudaDeviceSynchronize() );

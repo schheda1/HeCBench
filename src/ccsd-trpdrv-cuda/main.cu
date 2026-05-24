@@ -137,12 +137,12 @@ int main(int argc, char* argv[])
               Tij, Tkj, Tia, Tka, Xia, Xka, Jia, Jka, Kia, Kka, Jij, Jkj, Kij, Kkj,
               dintc1, dintx1, t1v1, dintc2, dintx2, t1v2);
           timers[iter] = time * 1e-9f;
-
+#ifdef VERIFY
           ccsd_trpdrv_ref(f1n, f1t, f2n, f2t, f3n, f3t, f4n, f4t, eorb,
               &ncor, &nocc, &nvir, &emp4_r, &emp5_r, &a, &i, &j, &k, &klo,
               Tij, Tkj, Tia, Tka, Xia, Xka, Jia, Jka, Kia, Kka, Jij, Jkj, Kij, Kkj,
               dintc1, dintx1, t1v1, dintc2, dintx2, t1v2);
-
+#endif
           iter++;
           if (iter==maxiter) {
             printf("Stopping after %d iterations...\n", iter);
@@ -154,10 +154,12 @@ int main(int argc, char* argv[])
           if (emp4 < -1000.0) emp4 += 1000.0;
           if (emp5 >  1000.0) emp5 -= 1000.0;
           if (emp5 < -1000.0) emp5 += 1000.0;
+#ifdef VERIFY
           if (emp4_r >  1000.0) emp4_r -= 1000.0;
           if (emp4_r < -1000.0) emp4_r += 1000.0;
           if (emp5_r >  1000.0) emp5_r -= 1000.0;
           if (emp5_r < -1000.0) emp5_r += 1000.0;
+#endif
         }
       }
     }
@@ -190,10 +192,10 @@ maxed_out:
 
   printf("These are meaningless but should not vary for a particular input:\n");
   printf("emp4=%f emp5=%f\n", emp4, emp5);
-
+#ifdef VERIFY
   bool ok = fabs(emp4_r - emp4) < 1e-6 && fabs(emp5_r - emp5) < 1e-6;
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   free(eorb);
   free(f1n );
   free(f2n );

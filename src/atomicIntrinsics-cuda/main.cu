@@ -45,9 +45,9 @@ void testcase(const int num, const int repeat)
 
   //Copy result from device to host
   cudaMemcpy(gpuData, dOData, memSize, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   computeGold<T>(gpuData, numThreads * numBlocks);
-
+#endif
   auto start = std::chrono::steady_clock::now();
 
   for (int i = 0; i < repeat; i++) {

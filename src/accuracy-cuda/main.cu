@@ -173,9 +173,10 @@ int main(int argc, char* argv[])
 
     int count;
     cudaMemcpy(&count, d_count, sizeof(int), cudaMemcpyDeviceToHost);
+#ifdef VERIFY
     printf("%s\n", (count == count_ref) ? "PASS" : "FAIL");
     // printf("Accuracy = %f\n", (float)count / nrows);
-
+#endif
     start = std::chrono::steady_clock::now();
 
     for (int i = 0; i < repeat; i++) {
