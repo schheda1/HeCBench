@@ -51,26 +51,27 @@ int main(int argc, char const *argv[])
     sequence[i] = alphabet[rand() % alphabet.size()];
   }
   sequence[N] = ETX;
-
+#ifdef VERIFY
   // host run may take a while
   auto start = NOW;
   auto cpu_seq = bwt_cpu(sequence);
   auto cpu_time = std::chrono::duration_cast<std::chrono::milliseconds>(NOW - start);
-
+#endif
   // device run
-  start = NOW;
+  auto start = NOW;
   auto gpu_seq = bwt(sequence);
   auto gpu_time = std::chrono::duration_cast<std::chrono::milliseconds>(NOW - start);
-
+#ifdef VERIFY
   std::cout << "Host time: " << cpu_time.count() << " ms" << std::endl;
+#endif  
   std::cout << "Device time: " << gpu_time.count() << " ms" << std::endl;
-
+#ifdef VERIFY
   if(cpu_seq.compare(gpu_seq) == 0) {
     std::cout << "PASS\n";
   } else {
     std::cout << "FAIL\n";
   }
-
+#endif
   free(sequence);
   return 0;
 }

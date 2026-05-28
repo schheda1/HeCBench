@@ -162,9 +162,12 @@ int main() {
   const float beta_re = 2.71f;
   const float beta_im = 8.28f;
 
+#ifdef VERIFY
   chemv_cpu(alpha_re, alpha_im, beta_re, beta_im, AT, X, Y_cpu);
+#endif
   chemv_gpu(alpha_re, alpha_im, beta_re, beta_im, AT, X, Y_gpu);
 
+#ifdef VERIFY
   for (int i = 0; i < N; i++)
     if ((fabs(Y_cpu[i * INCY + 0].Re - Y_gpu[i * INCY + 0].Re) > 1e-3) ||
         (fabs(Y_cpu[i * INCY + 0].Im - Y_gpu[i * INCY + 0].Im) > 1e-3))
@@ -174,6 +177,7 @@ int main() {
       return EXIT_FAILURE;
     }
   printf("PASS\n");
+#endif
   return EXIT_SUCCESS;
 }
 

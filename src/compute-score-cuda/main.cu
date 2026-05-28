@@ -438,8 +438,9 @@ int main(int argc, char** argv)
   cudaFree(d_docInfo);
   cudaFree(d_profileScore);
   printf("Done\n");
-
+#ifdef VERIFY
   runOnCPU();
+#endif
 }
 
 

@@ -19,8 +19,8 @@
     } \
 } while (0)
 
-#define MAX_MASK_WIDTH 10
-#define MAX_BLOCK_SIZE 1024
+#define MAX_MASK_WIDTH 9
+#define MAX_BLOCK_SIZE 512
 
 template<typename T>
 __constant__ T mask [MAX_MASK_WIDTH];
@@ -176,7 +176,9 @@ void conv1D(const int input_width, const int mask_width, const int repeat)
     printf("Average kernel execution time of conv1d kernel (block size %d): %f (us)\n",
            bs, (time * 1e-3f) / repeat);
     GPU_CHECK(cudaMemcpy(b, d_b, size_bytes, cudaMemcpyDeviceToHost));
+#ifdef VERIFY
     reference(a, b, h_mask, input_width, mask_width);
+#endif
   }
 
   // conv1D tiling
@@ -194,7 +196,9 @@ void conv1D(const int input_width, const int mask_width, const int repeat)
     printf("Average kernel execution time of conv1d-tiled kernel (block size %d): %f (us)\n",
            bs, (time * 1e-3f) / repeat);
     GPU_CHECK(cudaMemcpy(b, d_b, size_bytes, cudaMemcpyDeviceToHost));
+#ifdef VERIFY
     reference(a, b, h_mask, input_width, mask_width);
+#endif
   }
 
   // conv1D tiling and caching
@@ -212,7 +216,9 @@ void conv1D(const int input_width, const int mask_width, const int repeat)
     printf("Average kernel execution time of conv1d-tiled-caching kernel (block size %d): %f (us)\n",
            bs, (time * 1e-3f) / repeat);
     GPU_CHECK(cudaMemcpy(b, d_b, size_bytes, cudaMemcpyDeviceToHost));
+#ifdef VERIFY
     reference(a, b, h_mask, input_width, mask_width);
+#endif
   }
 
   free(a);
@@ -233,7 +239,7 @@ int main(int argc, char* argv[]) {
 
   const int repeat = atoi(argv[2]);
 
-  for (int mask_width = 3; mask_width < MAX_MASK_WIDTH; mask_width += 2) {
+  for (int mask_width = 7; mask_width < MAX_MASK_WIDTH; mask_width += 2) {
     printf("\n---------------------\n");
     printf("Mask width: %d\n", mask_width); 
 

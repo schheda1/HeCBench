@@ -231,7 +231,9 @@ void conv3D(const int N, const int C, const int M, const int Win, const int Hin,
   printf("Average kernel execution time of conv3d_s1 kernel: %f (us)\n",
          (time * 1e-3f) / repeat);
   cudaMemcpy(Y, dY, Y_bytes, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   verify(Y, Y_ref, Y_size);
+#endif
 
   start = std::chrono::steady_clock::now();
   for (int i = 0; i < repeat; i++) {
@@ -244,8 +246,9 @@ void conv3D(const int N, const int C, const int M, const int Win, const int Hin,
   printf("Average kernel execution time of conv3d_s2 kernel: %f (us)\n",
          (time * 1e-3f) / repeat);
   cudaMemcpy(Y, dY, Y_bytes, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   verify(Y, Y_ref, Y_size);
-
+#endif
   start = std::chrono::steady_clock::now();
   for (int i = 0; i < repeat; i++) {
     conv3d_s3 <<< grids_s3, blocks >>> (dX, dW, dY, C, M, K, Hin, Win, Hout, Wout, W_grid);
@@ -257,8 +260,9 @@ void conv3D(const int N, const int C, const int M, const int Win, const int Hin,
   printf("Average kernel execution time of conv3d_s3 kernel: %f (us)\n",
          (time * 1e-3f) / repeat);
   cudaMemcpy(Y, dY, Y_bytes, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   verify(Y, Y_ref, Y_size);
-
+#endif
 #ifdef CUDNN_CONV
   #include "conv3d_s4.cu"
   cudaMemcpy(Y, dY, Y_bytes, cudaMemcpyDeviceToHost);

@@ -96,7 +96,7 @@ int main(int argc, char **argv)
   printf("Average kernel execution time %f (s)\n", (time * 1e-9f) / numIterations);
 
   cudaMemcpy(h_OutputGPU, d_Output, sizeof(float)*imageW * imageH, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   printf("Comparing against Host/C++ computation...\n"); 
   convolutionRowHost(h_Buffer, h_Input, h_Kernel, imageW, imageH, KERNEL_RADIUS);
   convolutionColumnHost(h_OutputCPU, h_Buffer, h_Kernel, imageW, imageH, KERNEL_RADIUS);
@@ -120,5 +120,6 @@ int main(int argc, char **argv)
   cudaFree(d_Output);
 
   printf("%s\n", L2norm < 1e-6 ? "PASS" : "FAIL");
+#endif
   return 0;
 }

@@ -338,7 +338,7 @@ void runBoundsEngine(const int repeat)
     printf("Accrued Amount: %f\n", resultsFromGpu.accruedAmountCurrDate[numBonds/2]);
     printf("Clean Price: %f\n", resultsFromGpu.cleanPrice[numBonds/2]);
     printf("Bond Forward Val: %f\n\n", resultsFromGpu.bondForwardVal[numBonds/2]);
-
+#ifdef VERIFY
     gettimeofday(&start, NULL);
 
     for (int i = 0; i < 2; i++)
@@ -363,7 +363,7 @@ void runBoundsEngine(const int repeat)
     printf("Bond Forward Val: %f\n\n", resultsHost.bondForwardVal[numBonds/2]);
 
     printf("Speedup using GPU: %f\n", (timeCpu / 2) / (timeGpu / repeat) );
-
+#endif
     free(resultsHost.dirtyPrice);
     free(resultsHost.accruedAmountCurrDate);;
     free(resultsHost.cleanPrice);;

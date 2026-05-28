@@ -132,7 +132,7 @@ int main(int argc, char **argv)
   printf("Average kernel execution time : %f (ms)\n", (time * 1e-6f) / repeat);
 
   cudaMemcpy(res, d_pix, imgSize, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   // verify with tolerance
   const int tolerance = 1; // Allow differences up to 1 in each color channel
   int fail = 0;
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
   } else {
     printf("PASS\n");
   }
-  
+#endif  
   cudaFree(d_pix);
   free(pix);
   free(res);

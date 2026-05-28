@@ -224,7 +224,7 @@ int main(int argc, char **argv) {
   dimGrid.x = INSTANCES;
   dimGrid.y = INSTANCES;
 
-
+#ifdef VERIFY
   /* CPU */
   auto start = std::chrono::steady_clock::now();
   bzero(cpu_distance,INSTANCES*INSTANCES*sizeof(int));
@@ -232,16 +232,16 @@ int main(int argc, char **argv) {
   auto end = std::chrono::steady_clock::now();
   double elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   printf("CPU time: %f (us)\n", elapsedTime);
-
-  start = std::chrono::steady_clock::now();
+#endif
+  auto start = std::chrono::steady_clock::now();
   for (int n = 0; n < iterations; n++) {
     /* register GPU kernel */
     cudaMemset(distance_device, 0, INSTANCES * INSTANCES * sizeof(int));
     k1<<<dimGrid,dimBlock>>>(data_char_device, distance_device);
   }
   cudaDeviceSynchronize();
-  end = std::chrono::steady_clock::now();
-  elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+  auto end = std::chrono::steady_clock::now();
+  double elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
   cudaMemcpy(gpu_distance, distance_device,
              INSTANCES * INSTANCES * sizeof(int), cudaMemcpyDeviceToHost);

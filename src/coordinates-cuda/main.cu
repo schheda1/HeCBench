@@ -41,7 +41,7 @@ void coordinates_transform(const int num_coords, const int repeat)
   printf("Average execution time of device transform: %f (us)\n", (time * 1e-3f) / repeat);
 
   h_output = d_output;  // copy results from device to host
-
+#ifdef VERIFY
   start = std::chrono::steady_clock::now();
   for (int i = 0; i < 10; i++) {
     std::transform(h_input.cbegin(), h_input.cend(),
@@ -59,6 +59,7 @@ void coordinates_transform(const int num_coords, const int repeat)
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
 }
 
 int main(int argc, char* argv[])

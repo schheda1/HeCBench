@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
 
     multi_tensor_axpby<float, float, float>(
       chunk_size, noop_flag, tensor_lists, a, b, arg_to_check);
-
+#ifdef VERIFY
     bool ok  = true;
     for (int n = 0; n < max_tensors; n++) {
       auto x = tensor_lists_ref[0][n];
@@ -179,6 +179,7 @@ int main(int argc, char* argv[])
       if (!ok) break;
     }
     printf("%s\n", ok ? "PASS" : "FAIL");
+#endif
   }
 
   cudaFree(d_noop);

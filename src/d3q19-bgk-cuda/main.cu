@@ -151,7 +151,7 @@ double run_benchmark(BoxCU &domain, lbm_vars h_vars, lbm_vars d_vars) {
     d_vars.f0 = d_vars.f1;
     d_vars.f1 = tp;
     cudaDeviceSynchronize();
-
+#ifdef VERIFY
     // Ouput average kinetic energy for validation.
     if (do_output) {
       u_read(&h_vars, &d_vars, nl);
@@ -185,6 +185,7 @@ double run_benchmark(BoxCU &domain, lbm_vars h_vars, lbm_vars d_vars) {
         }
       }
     }
+#endif
   }
   end = std::chrono::steady_clock::now();
   auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();

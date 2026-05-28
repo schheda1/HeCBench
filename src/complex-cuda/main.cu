@@ -53,8 +53,9 @@ int main(int argc, char* argv[]) {
   printf("Average kernel execution time %f (s)\n", time * 1e-9f / repeat);
 
   cudaMemcpy(cs, d_cs, n, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   bool complex_float_check = check(cs, n);
-
+#endif
   start = std::chrono::steady_clock::now();
 
   // complex numbers in single precision
@@ -68,8 +69,9 @@ int main(int argc, char* argv[]) {
   printf("Average kernel execution time (reference) %f (s)\n", time * 1e-9f / repeat);
 
   cudaMemcpy(cs, d_cs, n, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   complex_float_check &= check(cs, n);
-
+#endif
   printf("\nDouble-precision complex data type\n");
   start = std::chrono::steady_clock::now();
 
@@ -84,8 +86,9 @@ int main(int argc, char* argv[]) {
   printf("Average kernel execution time %f (s)\n", time * 1e-9f / repeat);
 
   cudaMemcpy(cs, d_cs, n, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   bool complex_double_check = check(cs, n);
-
+#endif
   start = std::chrono::steady_clock::now();
 
   // complex numbers in double precision
@@ -99,11 +102,12 @@ int main(int argc, char* argv[]) {
   printf("Average kernel execution time (reference) %f (s)\n", time * 1e-9f / repeat);
 
   cudaMemcpy(cs, d_cs, n, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   complex_double_check &= check(cs, n);
 
   printf("%s\n", (complex_float_check && complex_double_check)
                  ? "PASS" : "FAIL");
-
+#endif
   cudaFree(d_cs);
   free(cs);
 

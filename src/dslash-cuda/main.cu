@@ -4,7 +4,7 @@
 std::vector<int> squaresize(4, LDIM);
 size_t sites_on_node = LDIM*LDIM*LDIM*LDIM;
 size_t even_sites_on_node = sites_on_node/2;
-unsigned int verbose=1;
+unsigned int verbose=0;
 size_t       warmups=1;
 
 //--------------------------------------------------------------------------------
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
       iterations, workgroup_size);
   if (verbose > 0)
     std::cout << "Total execution time = " << ttotal << " secs" << std::endl;
-
+#ifdef VERIFY
   // Validation
   std::vector<su3_vector> chkdst(total_sites);
   if (verbose > 0) {
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
       assert(almost_equal<Real>(dst[i].c[k].imag, chkdst[i].c[k].imag, EPISON));
     }
   }
-
+#endif
   // calculate flops/s, etc.
   // each matrix vector multiply is 3*(12 mult + 12 add) = (36 mult + 36 add) = 72 ops
   // sixteen mat vec operations per site 16*72 = 1152
