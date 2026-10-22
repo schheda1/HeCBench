@@ -175,8 +175,8 @@ void conv1D(const int input_width, const int mask_width, const int repeat)
     auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
     printf("Average kernel execution time of conv1d kernel (block size %d): %f (us)\n",
            bs, (time * 1e-3f) / repeat);
-    GPU_CHECK(cudaMemcpy(b, d_b, size_bytes, cudaMemcpyDeviceToHost));
 #ifdef VERIFY
+    GPU_CHECK(cudaMemcpy(b, d_b, size_bytes, cudaMemcpyDeviceToHost));
     reference(a, b, h_mask, input_width, mask_width);
 #endif
   }
@@ -195,8 +195,8 @@ void conv1D(const int input_width, const int mask_width, const int repeat)
     auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
     printf("Average kernel execution time of conv1d-tiled kernel (block size %d): %f (us)\n",
            bs, (time * 1e-3f) / repeat);
-    GPU_CHECK(cudaMemcpy(b, d_b, size_bytes, cudaMemcpyDeviceToHost));
 #ifdef VERIFY
+    GPU_CHECK(cudaMemcpy(b, d_b, size_bytes, cudaMemcpyDeviceToHost));
     reference(a, b, h_mask, input_width, mask_width);
 #endif
   }
@@ -215,8 +215,8 @@ void conv1D(const int input_width, const int mask_width, const int repeat)
     auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
     printf("Average kernel execution time of conv1d-tiled-caching kernel (block size %d): %f (us)\n",
            bs, (time * 1e-3f) / repeat);
-    GPU_CHECK(cudaMemcpy(b, d_b, size_bytes, cudaMemcpyDeviceToHost));
 #ifdef VERIFY
+    GPU_CHECK(cudaMemcpy(b, d_b, size_bytes, cudaMemcpyDeviceToHost));
     reference(a, b, h_mask, input_width, mask_width);
 #endif
   }

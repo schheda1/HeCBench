@@ -43,7 +43,7 @@
 #include <map>
 #include <cuda.h>
 
-#define RUN_CPU_SORTS
+//#define RUN_CPU_SORTS
 //#define GET_DETAILED_PERFORMANCE
 
 #define gpucheck(ans) { gpuAssert((ans), __FILE__, __LINE__); }

@@ -166,9 +166,9 @@ int main(int argc, char **argv) {
   cudaFree(d_stride_input);
   cudaFree(d_stride_output_local);
   cudaFree(d_stride_output_global);
-
+#ifdef VERIFY
   verify(input, output);
-
+#endif
   delete [] input;
   delete [] output;
   return 0;

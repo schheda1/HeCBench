@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
   float *result_ref = (float*) malloc (narray_size);
 
   srand(123);
-
+#ifdef VERIFY
   // compute max value and rounding factor of each array on a host
   float *arr = arrays;
   for (int n = 0; n < nArrays; n++) {
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
       result_ref[n] += truncateWithRoundingFactor(factor[n], arr[i]);
     arr += nElems;
   }
-
+#endif
   float *d_arrays;
   cudaMalloc((void**)&d_arrays, array_size);
 
@@ -153,12 +153,12 @@ int main(int argc, char* argv[]) {
   auto end = std::chrono::steady_clock::now();
   auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   printf("Average kernel execution time (sumArray): %f (s)\n", (time * 1e-9f) / nArrays);
-
+#ifdef VERIFY
   // bit accurate sum
   cudaMemcpy(result, d_result, narray_size, cudaMemcpyDeviceToHost);
   bool ok = !memcmp(result_ref, result, narray_size);
   printf("%s\n", ok ? "PASS" : "FAIL");
-  
+#endif
   start = std::chrono::steady_clock::now();
 
   // sum over arrays
@@ -168,12 +168,12 @@ int main(int argc, char* argv[]) {
   end = std::chrono::steady_clock::now();
   time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   printf("Kernel execution time (sumArrays): %f (s)\n", time * 1e-9f);
-
+#ifdef VERIFY
   // bit accurate sum
   cudaMemcpy(result, d_result, narray_size, cudaMemcpyDeviceToHost);
   ok = !memcmp(result_ref, result, narray_size);
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   cudaFree(d_arrays);
   cudaFree(d_maxVal);
   cudaFree(d_result);

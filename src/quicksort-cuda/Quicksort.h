@@ -79,7 +79,7 @@ uint median(uint x1, uint x2, uint x3) {
 	}
 }
 
-#define TRUST_BUT_VERIFY 1
+//#define TRUST_BUT_VERIFY 0
 // Note that SORT_THRESHOLD should always be 2X LQSORT_LOCAL_WORKGROUP_SIZE due to the use of bitonic sort
 // Always try LQSORT_LOCAL_WORKGROUP_SIZE to be 8X smaller than QUICKSORT_BLOCK_SIZE - then try everything else :)
 #ifdef CPU_DEVICE

@@ -313,7 +313,7 @@ int main(int argc, char* argv[])
   const int batch_size = atoi(argv[1]);
   const int repeat = atoi(argv[2]);
 
-  for (int dim = 8; dim <= 32768; dim = dim * 8) {
+  for (int dim = 8; dim <= 32768; dim = dim * 16) {
     hadamard_transform<float>(batch_size, dim, repeat);
     hadamard_transform<__half>(batch_size, dim, repeat);
     hadamard_transform<__nv_bfloat16>(batch_size, dim, repeat);

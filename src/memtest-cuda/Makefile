@@ -53,5 +53,7 @@ $(program): $(obj) Makefile
 clean:
 	rm -rf $(program) $(obj)
 
+# UU collection: repeat count cut (100 -> 20); every kernel keeps >= 20
+# launches and the per-launch work is unchanged.
 run: $(program)
-	$(LAUNCHER) ./$(program) 100
+	$(LAUNCHER) ./$(program) 20

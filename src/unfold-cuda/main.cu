@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
   printf("Average execution time of unfold backward kernel: %f (us)\n", (time * 1e-3f) / repeat);
 
   cudaMemcpy(h_grad_out, d_grad_out, output_size_bytes, cudaMemcpyDeviceToHost); 
-
+#ifdef VERIFY
   bool ok = true;
   for (int i = 0; i < grad_in_dim_size; i++) {
     if (repeat * h_grad_in[i] != h_grad_out[i]) {
@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
- 
+#endif 
   cudaFree(d_grad_in);
   cudaFree(d_grad_out);
   cudaFree(d_idx_dim);

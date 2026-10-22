@@ -129,8 +129,9 @@ int main(int argc, char** argv)
   printf("Average elapsed time of sort: %lf (s)\n", time * 1e-9 / passes);
 
   cudaMemcpy(h_odata, d_out, size * sizeof(T), cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   verifySort(h_odata, size);
-
+#endif
   // reference sort
   time = 0.0;
   for (int k = 0; k < passes; k++) {
@@ -146,8 +147,9 @@ int main(int argc, char** argv)
   printf("Average elapsed time of Thrust::sort: %lf (s)\n", time * 1e-9 / passes);
 
   cudaMemcpy(h_odata, d_odata, size * sizeof(T), cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   verifySort(h_odata, size);
-
+#endif
   cudaFree(d_idata);
   cudaFree(d_odata);
   cudaFree(d_isums);

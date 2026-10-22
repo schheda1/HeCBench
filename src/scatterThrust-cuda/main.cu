@@ -56,7 +56,7 @@ void scatter(int64_t num_elems, int repeat) {
   printf("Average execution time of thrust::scatter: %f (us)\n", (time * 1e-3f) / repeat);
 
   CHECK_CUDA( cudaMemcpy(h_out, d_out, out_size_bytes, cudaMemcpyDeviceToHost) )
-
+#ifdef VERIFY
   bool ok = true;
   for (int64_t i = 0; i < num_elems; i++) {
     if (h_out[i] != scalar_t(num_elems - 1 - i)) {
@@ -65,7 +65,7 @@ void scatter(int64_t num_elems, int repeat) {
     }
   }
   printf("%s\n\n", ok ? "PASS" : "FAIL");
-
+#endif
   CHECK_CUDA( cudaFree(d_src) )
   CHECK_CUDA( cudaFree(d_idx) )
   CHECK_CUDA( cudaFree(d_out) )

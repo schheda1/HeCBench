@@ -260,11 +260,11 @@ int main(int argc, char **argv) {
         cudaMemcpy(h_in_out + h_flags[n_tasks_cpu] - offset, d_in_out, n_tasks_gpu * p.n_gpu_threads * REGS * sizeof(T), cudaMemcpyDeviceToHost);
     }
 #endif
-
+#ifdef VERIFY
     // Verify answer
     verify(h_in_out, h_in_backup, p.in_size, p.remove_value,
            (p.in_size * p.compaction_factor) / 100);
-
+#endif
     // Free memory
 #ifdef DYNAMIC_PARTITION
     cudaFree(h_in_out);

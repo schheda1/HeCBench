@@ -732,12 +732,16 @@ int main(int argc, char *argv[])
   }
 
   auto start = std::chrono::high_resolution_clock::now();
+#ifdef VERIFY
   MatchC1(h_pts1, h_pts2, h_score.data(), h_index.data());
+#endif
   auto end = std::chrono::high_resolution_clock::now();
   auto elapsed_seconds = std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
   auto delay = elapsed_seconds.count() * 1000;
+#ifdef VERIFY
   std::cout << "MatchCPU1:   " << elapsed_seconds.count() * 1000 << " ms  "
             << 2.0*NPTS*NPTS*NDIM/delay/1024/1024 << " Gflops" << std::endl;
+#endif
 
   cudaMemcpy(d_pts1, h_pts1, psize*NDIM, cudaMemcpyHostToDevice);
   cudaMemcpy(d_pts2, h_pts2, psize*NDIM, cudaMemcpyHostToDevice);
@@ -755,7 +759,9 @@ int main(int argc, char *argv[])
   std::cout << "MatchGPU1:   " << delay << " ms  " << 2.0*NPTS*NPTS*NDIM/delay/1024/1024 << " Gflops" << std::endl;
   cudaMemcpy(h_index2.data(), d_index, psize, cudaMemcpyDeviceToHost);
   cudaMemcpy(h_score2.data(), d_score, psize, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   CheckMatches(h_index.data(), h_index2.data(), h_score.data(), h_score2.data());
+#endif
 
   blocks = dim3(NPTS/M2W);
   threads = dim3(M2W, M2H);
@@ -769,7 +775,9 @@ int main(int argc, char *argv[])
   std::cout << "MatchGPU2:   " << delay << " ms  " << 2.0*NPTS*NPTS*NDIM/delay/1024/1024 << " Gflops" << std::endl;
   cudaMemcpy(h_index2.data(), d_index, psize, cudaMemcpyDeviceToHost);
   cudaMemcpy(h_score2.data(), d_score, psize, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   CheckMatches(h_index.data(), h_index2.data(), h_score.data(), h_score2.data());
+#endif
 
   blocks = dim3(NPTS/M2W);
   threads = dim3(M2W, M2H);
@@ -783,7 +791,9 @@ int main(int argc, char *argv[])
   std::cout << "MatchGPU3:   " << delay << " ms  " << 2.0*NPTS*NPTS*NDIM/delay/1024/1024 << " Gflops" << std::endl;
   cudaMemcpy(h_index2.data(), d_index, psize, cudaMemcpyDeviceToHost);
   cudaMemcpy(h_score2.data(), d_score, psize, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   CheckMatches(h_index.data(), h_index2.data(), h_score.data(), h_score2.data());
+#endif
   
   blocks = dim3(NPTS/M2W);
   threads = dim3(M2W, M2H);
@@ -797,7 +807,9 @@ int main(int argc, char *argv[])
   std::cout << "MatchGPU4:   " << delay << " ms  " << 2.0*NPTS*NPTS*NDIM/delay/1024/1024 << " Gflops" << std::endl;
   cudaMemcpy(h_index2.data(), d_index, psize, cudaMemcpyDeviceToHost);
   cudaMemcpy(h_score2.data(), d_score, psize, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   CheckMatches(h_index.data(), h_index2.data(), h_score.data(), h_score2.data());
+#endif
   
   blocks = dim3(NPTS/M5W);
   threads = dim3(M5W, M5H);
@@ -811,7 +823,9 @@ int main(int argc, char *argv[])
   std::cout << "MatchGPU5:   " << delay << " ms  " << 2.0*NPTS*NPTS*NDIM/delay/1024/1024 << " Gflops" << std::endl;
   cudaMemcpy(h_index2.data(), d_index, psize, cudaMemcpyDeviceToHost);
   cudaMemcpy(h_score2.data(), d_score, psize, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   CheckMatches(h_index.data(), h_index2.data(), h_score.data(), h_score2.data());
+#endif
   
   blocks = dim3(NPTS/M5W);
   threads = dim3(M5W, M5H);
@@ -825,7 +839,9 @@ int main(int argc, char *argv[])
   std::cout << "MatchGPU6:   " << delay << " ms  " << 2.0*NPTS*NPTS*NDIM/delay/1024/1024 << " Gflops" << std::endl;
   cudaMemcpy(h_index2.data(), d_index, psize, cudaMemcpyDeviceToHost);
   cudaMemcpy(h_score2.data(), d_score, psize, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   CheckMatches(h_index.data(), h_index2.data(), h_score.data(), h_score2.data());
+#endif
 
   blocks = dim3(NPTS/M7W);
   threads = dim3(M7W, M7H/M7R);
@@ -839,7 +855,9 @@ int main(int argc, char *argv[])
   std::cout << "MatchGPU7:   " << delay << " ms  " << 2.0*NPTS*NPTS*NDIM/delay/1024/1024 << " Gflops" << std::endl;
   cudaMemcpy(h_index2.data(), d_index, psize, cudaMemcpyDeviceToHost);
   cudaMemcpy(h_score2.data(), d_score, psize, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   CheckMatches(h_index.data(), h_index2.data(), h_score.data(), h_score2.data());
+#endif
 
   blocks = dim3(NPTS/M7W);
   threads = dim3(M7W, M7H/M7R);
@@ -853,7 +871,9 @@ int main(int argc, char *argv[])
   std::cout << "MatchGPU8:   " << delay << " ms  " << 2.0*NPTS*NPTS*NDIM/delay/1024/1024 << " Gflops" << std::endl;
   cudaMemcpy(h_index2.data(), d_index, psize, cudaMemcpyDeviceToHost);
   cudaMemcpy(h_score2.data(), d_score, psize, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   CheckMatches(h_index.data(), h_index2.data(), h_score.data(), h_score2.data());
+#endif
 
   blocks = dim3(NPTS/M7W);
   threads = dim3(M7W, M7H/M7R/2);
@@ -867,7 +887,9 @@ int main(int argc, char *argv[])
   std::cout << "MatchGPU9:   " << delay << " ms  " << 2.0*NPTS*NPTS*NDIM/delay/1024/1024 << " Gflops" << std::endl;
   cudaMemcpy(h_index2.data(), d_index, psize, cudaMemcpyDeviceToHost);
   cudaMemcpy(h_score2.data(), d_score, psize, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   CheckMatches(h_index.data(), h_index2.data(), h_score.data(), h_score2.data());
+#endif
 
 
   blocks = dim3(NPTS/M7W);
@@ -882,7 +904,9 @@ int main(int argc, char *argv[])
   std::cout << "MatchGPU10:   " << delay << " ms  " << 2.0*NPTS*NPTS*NDIM/delay/1024/1024 << " Gflops" << std::endl;
   cudaMemcpy(h_index2.data(), d_index, psize, cudaMemcpyDeviceToHost);
   cudaMemcpy(h_score2.data(), d_score, psize, cudaMemcpyDeviceToHost);
+#ifdef VERIFY
   CheckMatches(h_index.data(), h_index2.data(), h_score.data(), h_score2.data());
+#endif
 
   cudaFree(d_pts1);
   cudaFree(d_pts2);

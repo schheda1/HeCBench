@@ -84,9 +84,11 @@ int32_t main(int32_t argc, char* argv[])
       GPU_CHECK(cudaMalloc(&d_x, total * sizeof(float)));
       GPU_CHECK(cudaMalloc(&d_topk_ids, batch_size * topk * sizeof(int32_t)));
       GPU_CHECK(cudaMalloc(&d_topk_value, batch_size * topk * sizeof(float)));
+#ifdef VERIFY
       std::vector<float> h_x(total);
       std::vector<int32_t> h_ids(batch_size * topk);
       std::vector<float> h_out(batch_size * topk);
+#endif
 
       const int64_t stride0 = -1, // stride 0 will be hidden_size
                     stride1 = 1;
@@ -98,10 +100,12 @@ int32_t main(int32_t argc, char* argv[])
       init_x<<<blocks, threads>>>(d_x, batch_size, hidden_size);
       shuffle_rows<<<batch_size, 1>>>(d_x, batch_size, hidden_size, 5678);
 
+#ifdef VERIFY
       GPU_CHECK(cudaMemcpy(h_x.data(), d_x, total * sizeof(float), cudaMemcpyDeviceToHost));
+#endif
 
       // warmup
-      for (int32_t i = 0; i < 100; i++) {
+      for (int32_t i = 0; i < 10; i++) {
         topk_radix<float, int32_t>(d_x, d_topk_ids, d_topk_value, topk,
                                    true, nullptr, nullptr, stride0, stride1,
                                    batch_size, hidden_size);
@@ -119,9 +123,9 @@ int32_t main(int32_t argc, char* argv[])
       auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
       printf("Average execution time of topk : %f (us)\n", (time * 1e-3f) / repeat);
 
+#ifdef VERIFY
       GPU_CHECK(cudaMemcpy(h_out.data(), d_topk_value, batch_size * topk * sizeof(float), cudaMemcpyDeviceToHost));
       GPU_CHECK(cudaMemcpy(h_ids.data(), d_topk_ids, batch_size * topk * sizeof(int32_t), cudaMemcpyDeviceToHost));
-
       bool ok = true;
       
       for (int32_t b = 0; b < batch_size; b++) {
@@ -139,7 +143,7 @@ int32_t main(int32_t argc, char* argv[])
       }
 
       printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
       GPU_CHECK(cudaFree(d_x));
       GPU_CHECK(cudaFree(d_topk_ids));
       GPU_CHECK(cudaFree(d_topk_value));

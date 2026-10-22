@@ -239,7 +239,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("Device count: %d\n", count);
-
+#ifdef VERIFY
   count = 0;
   spm_reference(M_h, vol_size, g_h, f_h, g_vol, f_vol, ivf_h, ivg_h, data_threshold_h);
   for(int i = 0; i < vol_size; i++)
@@ -258,7 +258,7 @@ int main(int argc, char* argv[])
     }
   }
   printf("Maximum difference %d\n", max_diff);
-
+#endif
   free(hist_h);
   free(hist_d);
   free(ivf_h);

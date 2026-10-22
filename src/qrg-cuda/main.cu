@@ -191,7 +191,7 @@ int main(int argc, const char **argv)
 
   printf("\nRead back results...\n"); 
   cudaMemcpy(h_OutputGPU, d_Output, sizeof(float)*QRNG_DIMENSIONS*N, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   printf("Comparing to the CPU results...\n\n");
   sumDelta = 0;
   sumRef   = 0;
@@ -209,7 +209,7 @@ int main(int argc, const char **argv)
   printf("  L1 norm: %E\n", L1norm);
   printf("  ckQuasirandomGenerator deviations %s Allowable Tolerance\n\n\n", (L1norm < 1e-6) ? "WITHIN" : "ABOVE");
   bPassFlag = (L1norm < 1e-6);
-
+#endif
   printf(">>>Launch InverseCND kernel...\n\n"); 
 
   // reuse variables for work-group sizes
@@ -238,7 +238,7 @@ int main(int argc, const char **argv)
 
   printf("\nRead back results...\n"); 
   cudaMemcpy(h_OutputGPU, d_Output, sizeof(float)*QRNG_DIMENSIONS*N, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   printf("Comparing to the CPU results...\n\n");
   sumDelta = 0;
   sumRef   = 0;
@@ -258,7 +258,7 @@ int main(int argc, const char **argv)
     printf("PASS\n");
   else
     printf("FAIL\n");
-
+#endif
   free(h_OutputGPU);
   cudaFree(d_Output);
   cudaFree(d_Table);

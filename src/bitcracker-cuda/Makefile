@@ -54,5 +54,5 @@ clean:
 
 run: $(program)
 	$(LAUNCHER) ./$(program) -f ./hash_pass/img_win8_user_hash.txt \
-                     -d ./hash_pass/user_passwords_60000.txt \
+                     -d ./hash_pass/user_passwords_large.txt \
                      -b 60000

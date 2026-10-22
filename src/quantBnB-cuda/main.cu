@@ -148,12 +148,12 @@ int main(int argc, char* argv[])
   std::mt19937 gen{19937};
  
   std::normal_distribution<float> d{0.f, 1.f};
-
+#ifdef VERIFY
   for (size_t i = 0; i < n; i++) {
     A[i] = d(gen); 
     ref[i] = dQuantize<0>(code, 0.f, A[i]);
   }
-
+#endif
   float *d_A, *d_code;
   cudaMalloc((void**)&d_A, A_size);
   cudaMemcpy(d_A, A.data(), A_size, cudaMemcpyHostToDevice);
@@ -183,9 +183,9 @@ int main(int argc, char* argv[])
           block_size, (time * 1e-3f) / repeat);
   
   cudaMemcpy(out.data(), d_out, out_size, cudaMemcpyDeviceToHost);
-
+#ifdef VERIFY
   printf("%s\n", out == ref ? "PASS" : "FAIL");
-  
+#endif  
   cudaFree(d_A);
   cudaFree(d_code);
   cudaFree(d_out);

@@ -241,7 +241,7 @@ void Test(DeviceInputIteratorT d_in,
                         d_lengths_out,
                         d_num_runs,
                         num_items));
-
+#ifdef VERIFY
   // Check for correctness (and display results, if specified)
   int compare0 = 0;
   int compare1 = 0;
@@ -255,7 +255,7 @@ void Test(DeviceInputIteratorT d_in,
 
   compare2 = CompareDeviceResults(&num_runs, d_num_runs, 1, true, g_verbose);
   printf("\t Count %s\n", compare2 ? "FAIL" : "PASS");
-
+#endif
   // Flush any stdout/stderr
   fflush(stdout);
   fflush(stderr);

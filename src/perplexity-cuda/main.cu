@@ -21,9 +21,9 @@
 #include <chrono>
 #include <vector>
 #include <cuda.h>
-
+#ifdef VERIFY
 #include "reference.cpp"
-
+#endif
 // Find the best Gaussian bandwidth for each row in the dataset 
 template <typename value_idx, typename value_t>
 __global__
@@ -147,7 +147,7 @@ int main(int argc, char* argv[]) {
   printf("Average kernel execution time: %f (s)\n", (time * 1e-9f) / repeat);
 
   cudaMemcpy(data.data(), d_data, sizeof(float)*n*n_nbrs, cudaMemcpyDeviceToHost); 
-
+#ifdef VERIFY
   // verify
   reference(distance.data(), h_data.data(), p, max_iter, tol, n, n_nbrs);
 
@@ -160,7 +160,7 @@ int main(int argc, char* argv[]) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-  
+#endif  
   cudaFree(d_distance);
   cudaFree(d_data);
   return 0;

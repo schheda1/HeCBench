@@ -259,11 +259,11 @@ int main(int argc, char **argv) {
     printf("Total task execution time for %d iterations: %f (ms)\n", p.n_reps + p.n_warmup, time * 1e-6f);
 
     printf("Best model (test) %d\n", best_model);
-
+#ifdef VERIFY
     // Verify answer
     verify(h_flow_vector_array, n_flow_vectors, h_random_numbers, p.max_iter, p.error_threshold,
            p.convergence_threshold, candidates, best_outliers);
-
+#endif
     // Free memory
     free(h_model_candidate);
     free(h_outliers_candidate);

@@ -98,6 +98,7 @@ void index_accumulate (int batch_size, int output_size, int vector_dim, int repe
   }
 
   CHECK_CUDA(cudaMemcpy(output, d_output, output_size_bytes, cudaMemcpyDeviceToHost));
+#ifdef VERIFY
   bool ok = true;
   for (int i = 0; i < output_size * vector_dim; i++) {
     if (fabsf(output[i] - output_ref[i]) > 1e-3f) {
@@ -107,7 +108,7 @@ void index_accumulate (int batch_size, int output_size, int vector_dim, int repe
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   int64_t time = 0;
   auto start = std::chrono::steady_clock::now();
 

@@ -508,8 +508,10 @@ int main(int argc, char **argv)
         batch, dim, dstate, seqlen, d_states, d_y
     );
 
+#ifdef VERIFY
     GPU_CHECK(cudaMemcpy(h_y_n, d_y,      N_y  * SZ, cudaMemcpyDeviceToHost));
     GPU_CHECK(cudaMemcpy(h_s_n, d_states, N_st * SZ, cudaMemcpyDeviceToHost));
+#endif
 
     // reset states
     GPU_CHECK(cudaMemcpy(d_states, h_states0, N_st * SZ, cudaMemcpyHostToDevice));
@@ -545,8 +547,10 @@ int main(int argc, char **argv)
 
     launch_kernel(p, use_z, /*softplus=*/true, even_len, d_carry_a, d_carry_b);
     
+#ifdef VERIFY
     GPU_CHECK(cudaMemcpy(h_y_v, d_y,      N_y  * SZ, cudaMemcpyDeviceToHost));
     GPU_CHECK(cudaMemcpy(h_s_v, d_states, N_st * SZ, cudaMemcpyDeviceToHost));
+#endif
     GPU_CHECK(cudaFree(d_carry_a));
     GPU_CHECK(cudaFree(d_carry_b));
 

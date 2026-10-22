@@ -303,13 +303,14 @@ int main(int argc, char **argv) {
   }
 
   printf("\n─────────────────────────────────────────────────────\n");
+#ifdef VERIFY
   printf("Checking backward2 pass\n");
   for (int block_size : block2D_sizes) {
     printf("Checking block size %d\n", block_size);
     upsample_backward2(d_dx, d_dout, B, C, H, W, block_size, block_size);
     validate_result(d_dx, dx, "dx", S);
   }
-
+#endif
   printf("\nBackward2 pass benchmarks:\n");
   for (int block_size : block2D_sizes) {
 

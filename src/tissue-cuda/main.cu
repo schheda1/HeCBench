@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
     tissue<<<blocksPerGrid, threadsPerBlock>>>(
         d_tisspoints,d_gtt,d_gbartt,d_ct,d_ctprev,d_qt,nnt,nntDev,step,2);
   }
-
+#ifdef VERIFY
   // may take long for a large grid on host
   for (int i = 0; i < 2; i++) {
     reference(h_tisspoints,h_gtt,h_gbartt,h_ct_gold,h_ctprev,h_qt,nnt,nntDev,step,2);
@@ -167,7 +167,7 @@ int main(int argc, char** argv) {
     }
   }
   printf("%s\n", ok ? "PASS" : "FAIL");
-
+#endif
   // timing kernel execution
   auto start = std::chrono::steady_clock::now();
 

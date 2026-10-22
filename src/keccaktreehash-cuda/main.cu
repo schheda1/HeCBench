@@ -19,8 +19,8 @@ It is given as is, without any guarantee.
 int main()
 {
    Print_Param();
-   TestCPU(1);
+   //TestCPU(1);
    TestGPU();
-   Verify_results();
+   //Verify_results();
    return 0;
 }

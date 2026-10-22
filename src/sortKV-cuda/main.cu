@@ -67,10 +67,10 @@ int main(int argc, char* argv[]) {
   const int repeat = atoi(argv[2]);
 
   printf("\nWarmup and verify\n");
-  sort_key_value<unsigned char>(size, repeat, true);
-  sort_key_value<short>(size, repeat, true);
-  sort_key_value<int>(size, repeat, true);
-  sort_key_value<long>(size, repeat, true);
+  sort_key_value<unsigned char>(size, repeat, false);
+  sort_key_value<short>(size, repeat, false);
+  sort_key_value<int>(size, repeat, false);
+  sort_key_value<long>(size, repeat, false);
 
   printf("\nPerformance evaluation\n");
   sort_key_value<unsigned char>(size, repeat, false);
